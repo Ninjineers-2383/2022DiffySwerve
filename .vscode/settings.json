@@ -14,5 +14,14 @@
     "**/.factorypath": true,
     "**/*~": true
   },
-  "C_Cpp.default.configurationProvider": "vscode-wpilib"
+  "C_Cpp.default.configurationProvider": "vscode-wpilib",
+  "files.associations": {
+    "numbers": "cpp",
+    "*.inc": "cpp"
+  },
+  "cSpell.words": [
+    "CANivore",
+    "Desaturate",
+    "Odometry"
+  ]
 }
