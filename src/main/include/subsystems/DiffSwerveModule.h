@@ -4,6 +4,8 @@
 #include <frc/controller/SimpleMotorFeedforward.h>
 #include <frc/Encoder.h>
 #include <frc/DutyCycleEncoder.h>
+#include <frc/simulation/DutyCycleEncoderSim.h>
+#include <frc/simulation/DCMotorSim.h>
 #include <frc/geometry/Rotation2d.h>
 #include <frc/kinematics/SwerveModuleState.h>
 #include <frc/motorcontrol/Spark.h>
@@ -42,6 +44,10 @@ public:
 
     void SetVoltage(double driveMax);
 
+    void Simulate();
+
+    units::degree_t GetModuleAngle();
+
     wpi::log::DoubleLogEntry m_topMotorCurrent;
     wpi::log::DoubleLogEntry m_bottomMotorCurrent;
     wpi::log::DoubleLogEntry m_topMotorRPM;
@@ -60,7 +66,16 @@ private:
 
     WPI_TalonFX m_topMotor;
     WPI_TalonFX m_bottomMotor;
+
+    TalonFXSimCollection &m_topMotorSim;
+    TalonFXSimCollection &m_bottomMotorSim;
+
+    frc::sim::DCMotorSim m_topMotorSimulator;
+    frc::sim::DCMotorSim m_bottomMotorSimulator;
+
     frc::DutyCycleEncoder m_encoder;
+
+    frc::sim::DutyCycleEncoderSim m_encoderSim;
 
     std::string m_name;
     wpi::log::DataLog &m_log;

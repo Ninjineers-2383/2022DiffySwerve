@@ -5,9 +5,13 @@
 #pragma once
 
 #include <frc2/command/Command.h>
+#include <frc/Joystick.h>
+#include <frc/DataLogManager.h>
+#include <frc/DriverStation.h>
 
-#include "commands/ExampleCommand.h"
+#include "commands/JoystickDriveCommand.h"
 #include "subsystems/ExampleSubsystem.h"
+#include "subsystems/DrivetrainSubsystem.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -24,9 +28,14 @@ public:
   frc2::Command *GetAutonomousCommand();
 
 private:
+  wpi::log::DataLog &m_log;
+
+  frc::Joystick m_driveJoystick{0};
+
   // The robot's subsystems and commands are defined here...
-  ExampleSubsystem m_subsystem;
-  ExampleCommand m_autonomousCommand;
+  DrivetrainSubsystem m_drivetrainSubsystem{m_log};
+  JoystickDriveCommand m_joystickDriveCommand{&m_drivetrainSubsystem, &m_driveJoystick};
 
   void ConfigureButtonBindings();
+  void SetDefaultCommands();
 };

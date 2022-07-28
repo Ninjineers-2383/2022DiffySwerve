@@ -23,6 +23,7 @@ DrivetrainSubsystem::DrivetrainSubsystem(wpi::log::DataLog &log)
       m_rearLeft{kRearLeftTopMotorPort, kRearLeftBottomMotorPort, kRearLeftEncoderPot, "rearLeft", kCANivoreBus, log},
       m_frontRight{kFrontRightTopMotorPort, kFrontRightBottomMotorPort, kFrontRightEncoderPot, "frontRight", kCANivoreBus, log},
       m_rearRight{kRearRightTopMotorPort, kRearRightBottomMotorPort, kRearRightEncoderPot, "rearRight", kCANivoreBus, log},
+      m_pigeonSim{m_pigeon.GetSimCollection()},
       m_odometry{kDriveKinematics, GetHeading(), frc::Pose2d()},
       m_lastPose{m_odometry.GetPose()},
       m_log(log),
@@ -43,6 +44,7 @@ void DrivetrainSubsystem::Periodic()
     auto rearRightState = m_rearRight.GetState();
 
     auto [vx, vy, vr] = kDriveKinematics.ToChassisSpeeds(frontLeftState, frontRightState, rearLeftState, rearRightState);
+    m_vr = vr;
 
     m_currentYaw = m_pigeon.GetYaw() - m_zero;
 
@@ -76,6 +78,16 @@ void DrivetrainSubsystem::Periodic()
     }
 }
 
+void DrivetrainSubsystem::SimulationPeriodic()
+{
+    m_frontLeft.Simulate();
+    m_rearLeft.Simulate();
+    m_frontRight.Simulate();
+    m_rearRight.Simulate();
+
+    m_pigeonSim.AddHeading(units::degrees_per_second_t{m_vr}.value() * 0.02);
+}
+
 // ==========================================================================
 
 void DrivetrainSubsystem::Drive(
@@ -93,7 +105,7 @@ void DrivetrainSubsystem::Drive(
 
 // ==========================================================================
 
-void DrivetrainSubsystem::SetModuleStates(wpi::array<frc::SwerveModuleState, 4> desiredStates)
+void DrivetrainSubsystem::SetModuleStates(wpi::array<frc::SwerveModuleState, 4> &desiredStates)
 {
     kDriveKinematics.DesaturateWheelSpeeds(&desiredStates, DriveConstants::kMaxSpeed);
 

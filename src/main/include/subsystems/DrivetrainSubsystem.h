@@ -33,9 +33,11 @@ public:
      */
     void Periodic() override;
 
+    void SimulationPeriodic() override;
+
     /**
-     * Drives the robot at given x, y and theta speeds. Speeds range from [-1, 1]
-     * and the linear speeds have no effect on the angular speed.
+     * Drives the robot at given x, y and theta speeds.
+     * Linear speeds have no effect on the angular speed.
      *
      * @param xSpeed        Speed of the robot in the x direction
      *                      (forward/backwards).
@@ -57,7 +59,7 @@ public:
     /**
      * Sets the drive MotorControllers to a power from -1 to 1.
      */
-    void SetModuleStates(wpi::array<frc::SwerveModuleState, 4> desiredStates);
+    void SetModuleStates(wpi::array<frc::SwerveModuleState, 4> &desiredStates);
 
     /**
      * Returns the heading of the robot.
@@ -125,10 +127,10 @@ public:
     DiffSwerveModule m_rearRight;
 
 private:
-    frc::Translation2d _GetPositionFromRealSense();
-
     // The gyro sensor
     WPI_Pigeon2 m_pigeon{0, GlobalConstants::kRIOBus};
+
+    BasePigeonSimCollection m_pigeonSim;
 
     // Odometry class for tracking robot pose
     frc::SwerveDriveOdometry<4> m_odometry;
@@ -144,4 +146,5 @@ private:
     double m_zero;
     double m_currentYaw = 0;
     int m_counter = 0; // Counter for USER button zero reset
+    units::radians_per_second_t m_vr;
 };
