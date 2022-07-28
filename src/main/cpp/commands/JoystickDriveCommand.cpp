@@ -9,11 +9,11 @@ JoystickDriveCommand::JoystickDriveCommand(DrivetrainSubsystem *drivetrain, frc:
 
 void JoystickDriveCommand::Execute()
 {
-    auto xAxis = -frc::ApplyDeadband(m_joystick->GetX(), 0.1) * DriveConstants::kMaxSpeed;
-    auto yAxis = -frc::ApplyDeadband(m_joystick->GetY(), 0.1) * DriveConstants::kMaxSpeed;
-    auto zAxis = frc::ApplyDeadband(m_joystick->GetZ(), 0.1) * DriveConstants::kMaxSpeed / 2;
+    auto xAxis = -frc::ApplyDeadband(m_joystick->GetY(), 0.1) * DriveConstants::kMaxSpeed;
+    auto yAxis = -frc::ApplyDeadband(m_joystick->GetX(), 0.1) * DriveConstants::kMaxSpeed;
+    auto zAxis = -frc::ApplyDeadband(m_joystick->GetZ(), 0.1) * DriveConstants::kMaxSpeed;
 
-    m_drivetrain->SetFieldCentric(m_joystick->GetTrigger());
+    m_drivetrain->SetFieldCentric(!m_joystick->GetRawButton(3)); // Set Field Centered while not holding 3 button
 
     m_drivetrain->Drive(xAxis, yAxis, units::radians_per_second_t(zAxis.value()));
 }

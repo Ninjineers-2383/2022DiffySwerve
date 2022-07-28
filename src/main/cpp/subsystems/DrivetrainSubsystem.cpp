@@ -12,6 +12,7 @@
 #include "Constants.h"
 #include <wpi/numbers>
 #include <math.h>
+#include <frc/RobotBase.h>
 
 using namespace DriveConstants;
 using namespace GlobalConstants;
@@ -32,6 +33,11 @@ DrivetrainSubsystem::DrivetrainSubsystem(wpi::log::DataLog &log)
     LoadWheelOffsets();
 
     frc::SmartDashboard::PutData("Field", &m_field);
+
+    if (frc::RobotBase::IsSimulation())
+    {
+        m_odometry.ResetPosition(frc::Pose2d(1_m, 1_m, 0_deg), 0_deg);
+    }
 }
 
 // ==========================================================================

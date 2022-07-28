@@ -57,9 +57,9 @@ namespace ModuleConstants
 {
     constexpr double MAX_CURRENT = 80.0;
 
-    constexpr double kPModuleTurningController = 0.6 / wpi::numbers::pi;
+    constexpr double kPModuleTurningController = 1 / wpi::numbers::pi;
     // constexpr double kPModuleTurningController = 100;
-    constexpr double kPModuleDriveController = 1; // 0.025;
+    constexpr double kPModuleDriveController = 0.5; // 0.025;
     constexpr double kMaxTurnOutput = .5;
 
     // DriveFFConstants
@@ -68,7 +68,7 @@ namespace ModuleConstants
     // constexpr auto ka = .26974 * 1_V * 1_s * 1_s / 1_m;
     constexpr auto ks = 0.2_V;
     constexpr auto kv = 0.012 * 1_V * 1_s / 1_m;
-    constexpr auto ka = .01 * 1_V * 1_s * 1_s / 1_m;
+    constexpr auto ka = .1 * 1_V * 1_s * 1_s / 1_m;
 
     constexpr double kDriveGearRatio = 6.4;
     constexpr double kTurnGearRatio = 28;

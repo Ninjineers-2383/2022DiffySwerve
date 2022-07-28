@@ -125,7 +125,8 @@
         }
       ],
       "window": {
-        "name": "Front Left"
+        "name": "Front Left",
+        "visible": false
       }
     }
   }

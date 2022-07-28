@@ -1,0 +1,343 @@
+{
+  "NetworkTables": {
+    "SmartDashboard": {
+      "Field": {
+        "open": true
+      },
+      "Modules": {
+        "open": true,
+        "rearLeft": {
+          "open": true
+        }
+      },
+      "open": true
+    },
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/DigitalInput[1]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[3]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[4]": "Digital Input",
+      "/LiveWindow/Ungrouped/Pigeon 2[0]": "Gyro",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/class frc2::SubsystemBase": "Subsystem",
+      "/SmartDashboard/Field": "Field2d"
+    },
+    "windows": {
+      "/SmartDashboard/Field": {
+        "image": "C:\\Users\\Henry\\wkspaces\\diffy\\2022-field.png",
+        "window": {
+          "name": "Field Pose",
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables Settings": {
+    "dsClient": false,
+    "mode": "Client",
+    "serverTeam": "127.0.0.1"
+  },
+  "Plots": {
+    "Plot <0>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "autoFit": true,
+              "label": "Velocity"
+            }
+          ],
+          "height": 177,
+          "name": "Drive Speed",
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Modules/frontLeft/Desired Speed",
+              "name": "Desired"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Modules/frontLeft/Drive Speed",
+              "name": "Actual"
+            }
+          ],
+          "showPause": false
+        },
+        {
+          "axis": [
+            {
+              "autoFit": true,
+              "label": "Rotation",
+              "max": 3.14159,
+              "min": -3.14159
+            }
+          ],
+          "height": 177,
+          "name": "Module Rotation",
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Modules/frontLeft/Desired Angle",
+              "name": "Desired"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Modules/frontLeft/Module Angle",
+              "name": "Actual"
+            }
+          ],
+          "showPause": false
+        }
+      ],
+      "window": {
+        "name": "Front Left"
+      }
+    },
+    "Plot <1>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "autoFit": true,
+              "label": "Velocity"
+            }
+          ],
+          "height": 177,
+          "name": "Drive Speed",
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Modules/frontRight/Desired Speed",
+              "name": "Desired"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Modules/frontRight/Drive Speed",
+              "name": "Actual"
+            }
+          ],
+          "showPause": false
+        },
+        {
+          "axis": [
+            {
+              "autoFit": true,
+              "label": "Rotation",
+              "max": 3.14159,
+              "min": -3.14159
+            }
+          ],
+          "height": 177,
+          "name": "Module Rotation",
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Modules/frontRight/Desired Angle",
+              "name": "Desired"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Modules/frontRight/Module Angle",
+              "name": "Actual"
+            }
+          ],
+          "showPause": false
+        }
+      ],
+      "window": {
+        "name": "Front Right"
+      }
+    },
+    "Plot <2>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "autoFit": true,
+              "label": "Velocity"
+            }
+          ],
+          "height": 186,
+          "name": "Drive Speed",
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Modules/rearLeft/Desired Speed",
+              "name": "Desired"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Modules/rearLeft/Drive Speed",
+              "name": "Actual"
+            }
+          ],
+          "showPause": false
+        },
+        {
+          "axis": [
+            {
+              "autoFit": true,
+              "label": "Rotation",
+              "max": 3.14159,
+              "min": -3.14159
+            }
+          ],
+          "height": 186,
+          "name": "Module Rotation",
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Modules/rearLeft/Desired Angle",
+              "name": "Desired"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Modules/rearLeft/Module Angle",
+              "name": "Actual"
+            }
+          ],
+          "showPause": false
+        }
+      ],
+      "window": {
+        "name": "Rear Left"
+      }
+    },
+    "Plot <3>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "autoFit": true,
+              "label": "Velocity"
+            }
+          ],
+          "height": 186,
+          "name": "Drive Speed",
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Modules/rearRight/Desired Speed",
+              "name": "Desired"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Modules/rearRight/Drive Speed",
+              "name": "Actual"
+            }
+          ],
+          "showPause": false
+        },
+        {
+          "axis": [
+            {
+              "autoFit": true,
+              "label": "Rotation",
+              "max": 3.14159,
+              "min": -3.14159
+            }
+          ],
+          "height": 186,
+          "name": "Module Rotation",
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Modules/rearRight/Desired Angle",
+              "name": "Desired"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/Modules/rearRight/Module Angle",
+              "name": "Actual"
+            }
+          ],
+          "showPause": false
+        }
+      ],
+      "window": {
+        "name": "Rear Right"
+      }
+    }
+  }
+}

@@ -1,7 +1,6 @@
 #include "subsystems/DiffSwerveModule.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <units/voltage.h>
-#include <units/moment_of_inertia.h>
 
 // ============================================================================
 
@@ -10,8 +9,8 @@ DiffSwerveModule::DiffSwerveModule(int topMotorChannel, int bottomMotorChannel, 
       m_bottomMotor(bottomMotorChannel, CANbus),
       m_topMotorSim{m_topMotor.GetSimCollection()},
       m_bottomMotorSim{m_bottomMotor.GetSimCollection()},
-      m_topMotorSimulator{frc::DCMotor::Falcon500(), 1, 0.01_kg_sq_m},
-      m_bottomMotorSimulator{frc::DCMotor::Falcon500(), 1, 0.01_kg_sq_m},
+      m_topMotorSimulator{frc::DCMotor::Falcon500(), 1, units::kilogram_square_meter_t{0.0005}},
+      m_bottomMotorSimulator{frc::DCMotor::Falcon500(), 1, units::kilogram_square_meter_t{0.0005}},
       m_encoder(encoderPort),
       m_encoderSim{m_encoder},
       m_name(name),
