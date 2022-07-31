@@ -30,11 +30,11 @@ public:
 private:
   wpi::log::DataLog &m_log;
 
-  frc::Joystick m_driveJoystick{0};
+  frc::Joystick m_driveJoystick;
 
   // The robot's subsystems and commands are defined here...
-  DrivetrainSubsystem m_drivetrainSubsystem{m_log};
-  JoystickDriveCommand m_joystickDriveCommand{&m_drivetrainSubsystem, &m_driveJoystick};
+  DrivetrainSubsystem m_drivetrainSubsystem;
+  JoystickDriveCommand m_joystickDriveCommand;
 
   void ConfigureButtonBindings();
   void SetDefaultCommands();

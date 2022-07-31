@@ -5,7 +5,10 @@
 #include "RobotContainer.h"
 
 RobotContainer::RobotContainer()
-    : m_log{frc::DataLogManager::GetLog()}
+    : m_log{frc::DataLogManager::GetLog()},
+      m_driveJoystick{0},
+      m_drivetrainSubsystem{m_log},
+      m_joystickDriveCommand{&m_drivetrainSubsystem, &m_driveJoystick}
 {
   frc::DataLogManager::Start();
 

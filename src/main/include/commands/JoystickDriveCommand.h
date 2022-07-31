@@ -8,6 +8,7 @@
 #include <frc2/command/CommandHelper.h>
 
 #include <frc/Joystick.h>
+#include <networktables/NetworkTableInstance.h>
 
 #include "subsystems/DrivetrainSubsystem.h"
 
@@ -36,4 +37,5 @@ public:
 private:
     DrivetrainSubsystem *m_drivetrain;
     frc::Joystick *m_joystick;
+    nt::NetworkTableInstance m_table;
 };

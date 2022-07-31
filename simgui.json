@@ -57,7 +57,9 @@
           "open": true
         },
         "open": true
-      },
+      }
+    },
+    "SoundCues": {
       "open": true
     }
   },
