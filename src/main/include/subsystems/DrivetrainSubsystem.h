@@ -103,12 +103,12 @@ public:
     const units::meter_t kWheelBase = 1_m;  // Distance between modules on robot
 
     frc::SwerveDriveKinematics<3> kDriveKinematics{
-        frc::Translation2d(0_m , kWheelBase * sqrt(2) / 2),
-        frc::Translation2d(kWheelBase / 2, -kWheelBase * sqrt(2) / 2),
-        frc::Translation2d(-kWheelBase / 2, -kWheelBase * sqrt(2) / 2)};
+        frc::Translation2d(-kWheelBase / 2 , kWheelBase / ( 2 * sqrt(3))),
+        frc::Translation2d(0_m, -kWheelBase / sqrt(3)),
+        frc::Translation2d(kWheelBase / 2, kWheelBase / ( 2 * sqrt(3)))};
 
     void MotorsOff();
-
+ 
     void ToggleFieldCentric();
     void SetFieldCentric(bool fieldCentric);
 
