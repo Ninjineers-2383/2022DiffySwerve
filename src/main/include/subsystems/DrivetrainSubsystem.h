@@ -59,7 +59,7 @@ public:
     /**
      * Sets the drive MotorControllers to a power from -1 to 1.
      */
-    void SetModuleStates(wpi::array<frc::SwerveModuleState, 4> &desiredStates);
+    void SetModuleStates(wpi::array<frc::SwerveModuleState, 3> &desiredStates);
 
     /**
      * Returns the heading of the robot.
@@ -100,14 +100,12 @@ public:
     void ResetOdometry(frc::Pose2d pose);
 
     // TODO: Get real values for these constants
-    const units::meter_t kTrackWidth = 0.432_m; // Distance between centers of right and left wheels on robot
-    const units::meter_t kWheelBase = 0.686_m;  // Distance between centers of front and back wheels on robot
+    const units::meter_t kWheelBase = 1_m;  // Distance between modules on robot
 
-    frc::SwerveDriveKinematics<4> kDriveKinematics{
-        frc::Translation2d(kWheelBase / 2, kTrackWidth / 2),
-        frc::Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-        frc::Translation2d(-kWheelBase / 2, kTrackWidth / 2),
-        frc::Translation2d(-kWheelBase / 2, -kTrackWidth / 2)};
+    frc::SwerveDriveKinematics<3> kDriveKinematics{
+        frc::Translation2d(0_m , kWheelBase * sqrt(2) / 2),
+        frc::Translation2d(kWheelBase / 2, -kWheelBase * sqrt(2) / 2),
+        frc::Translation2d(-kWheelBase / 2, -kWheelBase * sqrt(2) / 2)};
 
     void MotorsOff();
 
@@ -122,9 +120,8 @@ public:
     double GetOffset();
 
     DiffSwerveModule m_frontLeft;
-    DiffSwerveModule m_rearLeft;
+    DiffSwerveModule m_rear;
     DiffSwerveModule m_frontRight;
-    DiffSwerveModule m_rearRight;
 
 private:
     // The gyro sensor
@@ -133,7 +130,7 @@ private:
     BasePigeonSimCollection m_pigeonSim;
 
     // Odometry class for tracking robot pose
-    frc::SwerveDriveOdometry<4> m_odometry;
+    frc::SwerveDriveOdometry<3> m_odometry;
 
     frc::Field2d m_field;
 

@@ -38,13 +38,9 @@ namespace DriveConstants
     constexpr int kFrontRightBottomMotorPort = 23;
     constexpr int kFrontRightEncoderPot = 2;
 
-    constexpr int kRearLeftTopMotorPort = 24;
-    constexpr int kRearLeftBottomMotorPort = 25;
-    constexpr int kRearLeftEncoderPot = 3;
-
-    constexpr int kRearRightTopMotorPort = 26;
-    constexpr int kRearRightBottomMotorPort = 27;
-    constexpr int kRearRightEncoderPot = 4;
+    constexpr int kRearTopMotorPort = 24;
+    constexpr int kRearBottomMotorPort = 25;
+    constexpr int kRearEncoderPot = 3;
 
     constexpr double driveMaxVoltage = 10;
 

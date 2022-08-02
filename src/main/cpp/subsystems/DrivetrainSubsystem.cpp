@@ -21,9 +21,8 @@ using namespace GlobalConstants;
 
 DrivetrainSubsystem::DrivetrainSubsystem(wpi::log::DataLog &log)
     : m_frontLeft{kFrontLeftTopMotorPort, kFrontLeftBottomMotorPort, kFrontLeftEncoderPot, "frontLeft", kCANivoreBus, log},
-      m_rearLeft{kRearLeftTopMotorPort, kRearLeftBottomMotorPort, kRearLeftEncoderPot, "rearLeft", kCANivoreBus, log},
+      m_rear{kRearTopMotorPort, kRearBottomMotorPort, kRearEncoderPot, "rear", kCANivoreBus, log},
       m_frontRight{kFrontRightTopMotorPort, kFrontRightBottomMotorPort, kFrontRightEncoderPot, "frontRight", kCANivoreBus, log},
-      m_rearRight{kRearRightTopMotorPort, kRearRightBottomMotorPort, kRearRightEncoderPot, "rearRight", kCANivoreBus, log},
       m_pigeonSim{m_pigeon.GetSimCollection()},
       m_odometry{kDriveKinematics, GetHeading(), frc::Pose2d()},
       m_lastPose{m_odometry.GetPose()},
@@ -45,11 +44,10 @@ DrivetrainSubsystem::DrivetrainSubsystem(wpi::log::DataLog &log)
 void DrivetrainSubsystem::Periodic()
 {
     auto frontLeftState = m_frontLeft.GetState();
-    auto rearLeftState = m_rearLeft.GetState();
+    auto rearState = m_rear.GetState();
     auto frontRightState = m_frontRight.GetState();
-    auto rearRightState = m_rearRight.GetState();
 
-    auto [vx, vy, vr] = kDriveKinematics.ToChassisSpeeds(frontLeftState, frontRightState, rearLeftState, rearRightState);
+    auto [vx, vy, vr] = kDriveKinematics.ToChassisSpeeds(frontLeftState, frontRightState, rearState);
     m_vr = vr;
 
     m_currentYaw = m_pigeon.GetYaw() - m_zero;
@@ -58,8 +56,7 @@ void DrivetrainSubsystem::Periodic()
         GetHeading(),
         frontLeftState,
         frontRightState,
-        rearLeftState,
-        rearRightState);
+        rearState);
 
     frc::SmartDashboard::PutNumber("Gyro", m_currentYaw);
     frc::SmartDashboard::PutBoolean("FieldCentric", m_fieldCentric);
@@ -87,9 +84,8 @@ void DrivetrainSubsystem::Periodic()
 void DrivetrainSubsystem::SimulationPeriodic()
 {
     m_frontLeft.Simulate();
-    m_rearLeft.Simulate();
+    m_rear.Simulate();
     m_frontRight.Simulate();
-    m_rearRight.Simulate();
 
     m_pigeonSim.AddHeading(units::degrees_per_second_t{m_vr}.value() * 0.02);
 }
@@ -111,16 +107,15 @@ void DrivetrainSubsystem::Drive(
 
 // ==========================================================================
 
-void DrivetrainSubsystem::SetModuleStates(wpi::array<frc::SwerveModuleState, 4> &desiredStates)
+void DrivetrainSubsystem::SetModuleStates(wpi::array<frc::SwerveModuleState, 3> &desiredStates)
 {
     kDriveKinematics.DesaturateWheelSpeeds(&desiredStates, DriveConstants::kMaxSpeed);
 
     double flMax = m_frontLeft.SetDesiredState(desiredStates[0]);
     double frMax = m_frontRight.SetDesiredState(desiredStates[1]);
-    double blMax = m_rearLeft.SetDesiredState(desiredStates[2]);
-    double brMax = m_rearRight.SetDesiredState(desiredStates[3]);
+    double bMax = m_rear.SetDesiredState(desiredStates[2]);
 
-    double driveMax = std::max(std::max(blMax, brMax), std::max(flMax, frMax));
+    double driveMax = std::max(bMax, std::max(flMax, frMax));
 
     if (driveMax > DriveConstants::driveMaxVoltage)
         driveMax = DriveConstants::driveMaxVoltage / driveMax;
@@ -129,8 +124,7 @@ void DrivetrainSubsystem::SetModuleStates(wpi::array<frc::SwerveModuleState, 4> 
 
     m_frontLeft.SetVoltage(driveMax);
     m_frontRight.SetVoltage(driveMax);
-    m_rearLeft.SetVoltage(driveMax);
-    m_rearRight.SetVoltage(driveMax);
+    m_rear.SetVoltage(driveMax);
 }
 
 // ==========================================================================
@@ -138,9 +132,8 @@ void DrivetrainSubsystem::SetModuleStates(wpi::array<frc::SwerveModuleState, 4> 
 void DrivetrainSubsystem::ResetEncoders()
 {
     m_frontLeft.ResetEncoders();
-    m_rearLeft.ResetEncoders();
+    m_rear.ResetEncoders();
     m_frontRight.ResetEncoders();
-    m_rearRight.ResetEncoders();
 }
 
 // ==========================================================================
@@ -194,9 +187,8 @@ void DrivetrainSubsystem::ResetOdometry(frc::Pose2d pose)
 void DrivetrainSubsystem::MotorsOff()
 {
     m_frontLeft.MotorsOff();
-    m_rearLeft.MotorsOff();
+    m_rear.MotorsOff();
     m_frontRight.MotorsOff();
-    m_rearRight.MotorsOff();
 }
 
 // ==========================================================================
@@ -245,9 +237,7 @@ void DrivetrainSubsystem::GyroCrab(double x, double y, double desiredAngle)
 void DrivetrainSubsystem::SetWheelOffsets()
 {
     m_frontLeft.SetWheelOffset();
-    m_rearLeft.SetWheelOffset();
     m_frontRight.SetWheelOffset();
-    m_rearRight.SetWheelOffset();
     fmt::print("INFO: SetWheelOffsets Complete\n");
 }
 
@@ -256,8 +246,7 @@ void DrivetrainSubsystem::SetWheelOffsets()
 void DrivetrainSubsystem::LoadWheelOffsets()
 {
     m_frontLeft.LoadWheelOffset();
-    m_rearLeft.LoadWheelOffset();
+    m_rear.LoadWheelOffset();
     m_frontRight.LoadWheelOffset();
-    m_rearRight.LoadWheelOffset();
     fmt::print("INFO: LoadWheelOffsets Complete\n");
 }
