@@ -99,15 +99,13 @@ public:
      */
     void ResetOdometry(frc::Pose2d pose);
 
-    // TODO: Get real values for these constants
-    const units::meter_t kTrackWidth = 0.432_m; // Distance between centers of right and left wheels on robot
-    const units::meter_t kWheelBase = 0.686_m;  // Distance between centers of front and back wheels on robot
+
 
     frc::SwerveDriveKinematics<4> kDriveKinematics{
-        frc::Translation2d(kWheelBase / 2, kTrackWidth / 2),
-        frc::Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-        frc::Translation2d(-kWheelBase / 2, kTrackWidth / 2),
-        frc::Translation2d(-kWheelBase / 2, -kTrackWidth / 2)};
+        DriveConstants::FrontRightModule::translation,
+        DriveConstants::RearRightModule::translation,
+        DriveConstants::FrontLeftModule::translation,
+        DriveConstants::RearRightModule::translation};
 
     void MotorsOff();
 
