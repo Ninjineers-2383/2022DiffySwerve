@@ -55,7 +55,7 @@ public:
 
     /**
      * Sets the drive MotorControllers to a power from -1 to 1.
-     * 
+     *
      * @param desiredStates array for target states
      */
     void SetModuleStates(wpi::array<frc::SwerveModuleState, DriveConstants::kModuleCount> &desiredStates);
@@ -74,7 +74,7 @@ public:
 
     /**
      * Sets the heading of the robot to offset parameter.
-     * 
+     *
      * @param heading target heading
      */
     void SetOffsetHeading(int heading);
@@ -100,12 +100,10 @@ public:
      */
     void ResetOdometry(frc::Pose2d pose);
 
-
-
     frc::SwerveDriveKinematics<DriveConstants::kModuleCount> kDriveKinematics{
-        DriveConstants::FrontRightModule::translation,
-        DriveConstants::RearRightModule::translation,
         DriveConstants::FrontLeftModule::translation,
+        DriveConstants::FrontRightModule::translation,
+        DriveConstants::RearLeftModule::translation,
         DriveConstants::RearRightModule::translation};
 
     /** turn off both motors */
@@ -116,14 +114,14 @@ public:
 
     /**
      * set field centric mode
-     * 
+     *
      * @param fieldCentric target state
      */
     void SetFieldCentric(bool fieldCentric);
 
     /**
      * gyro-assisted movement
-     * 
+     *
      * @param x speed
      * @param y speed
      */
@@ -136,11 +134,11 @@ public:
     void LoadWheelOffsets();
 
     DiffSwerveModule m_frontLeft;
-    DiffSwerveModule m_rearLeft;
     DiffSwerveModule m_frontRight;
+    DiffSwerveModule m_rearLeft;
     DiffSwerveModule m_rearRight;
 
-    DiffSwerveModule *moduleArray [DriveConstants::kModuleCount] = {&m_frontLeft, &m_frontRight, &m_frontRight, &m_rearRight};
+    DiffSwerveModule *moduleArray[DriveConstants::kModuleCount] = {&m_frontLeft, &m_frontRight, &m_rearLeft, &m_rearRight};
 
 private:
     // The gyro sensor
@@ -163,5 +161,4 @@ private:
     double m_currentYaw = 0;
     int m_counter = 0; // Counter for USER button zero reset
     units::radians_per_second_t m_vr;
-
 };

@@ -8,9 +8,19 @@ RobotContainer::RobotContainer()
     : m_log{frc::DataLogManager::GetLog()},
       m_driveJoystick{0},
       m_drivetrainSubsystem{m_log},
-      m_joystickDriveCommand{&m_drivetrainSubsystem,  [&]() {return m_driveJoystick.GetX();},  [&]() {return m_driveJoystick.GetY();},  [&]() {return m_driveJoystick.GetZ();},  [&]() {return m_driveJoystick.GetRawButtonPressed(1);}}
+      m_joystickDriveCommand{
+          &m_drivetrainSubsystem, [&]()
+          { return m_driveJoystick.GetX(); },
+          [&]()
+          { return m_driveJoystick.GetY(); },
+          [&]()
+          { return m_driveJoystick.GetZ(); },
+          [&]()
+          { return m_driveJoystick.GetRawButtonPressed(1); }}
 {
   frc::DataLogManager::Start();
+
+  frc::DriverStation::StartDataLog(m_log);
 
   SetDefaultCommands();
 

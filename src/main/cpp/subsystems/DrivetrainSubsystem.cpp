@@ -21,7 +21,7 @@ using namespace GlobalConstants;
 
 DrivetrainSubsystem::DrivetrainSubsystem(wpi::log::DataLog &log)
     : m_frontLeft{FrontLeftModule::kTopMotorPort, FrontLeftModule::kBottomMotorPort, FrontLeftModule::kEncoderPort, FrontLeftModule::name, kCANivoreBus, log},
-      m_rearLeft{RearLeftModule::kTopMotorPort, RearLeftModule:: kBottomMotorPort, RearLeftModule::kEncoderPort, RearLeftModule::name, kCANivoreBus, log},
+      m_rearLeft{RearLeftModule::kTopMotorPort, RearLeftModule::kBottomMotorPort, RearLeftModule::kEncoderPort, RearLeftModule::name, kCANivoreBus, log},
       m_frontRight{FrontRightModule::kTopMotorPort, FrontRightModule::kBottomMotorPort, FrontRightModule::kEncoderPort, FrontRightModule::name, kCANivoreBus, log},
       m_rearRight{RearRightModule::kTopMotorPort, RearRightModule::kBottomMotorPort, RearRightModule::kEncoderPort, RearRightModule::name, kCANivoreBus, log},
       m_pigeonSim{m_pigeon.GetSimCollection()},
@@ -45,8 +45,8 @@ DrivetrainSubsystem::DrivetrainSubsystem(wpi::log::DataLog &log)
 void DrivetrainSubsystem::Periodic()
 {
     frc::SwerveModuleState frontLeftState = m_frontLeft.GetState();
-    frc::SwerveModuleState rearLeftState = m_rearLeft.GetState();
     frc::SwerveModuleState frontRightState = m_frontRight.GetState();
+    frc::SwerveModuleState rearLeftState = m_rearLeft.GetState();
     frc::SwerveModuleState rearRightState = m_rearRight.GetState();
 
     auto [vx, vy, vr] = kDriveKinematics.ToChassisSpeeds(frontLeftState, frontRightState, rearLeftState, rearRightState);
@@ -115,15 +115,17 @@ void DrivetrainSubsystem::SetModuleStates(wpi::array<frc::SwerveModuleState, kMo
 
     units::voltage::volt_t driveMax = units::voltage::volt_t(0);
 
-    for (int i = 0; i < kModuleCount; i ++) {
+    for (int i = 0; i < kModuleCount; i++)
+    {
         const units::voltage::volt_t max = moduleArray[i]->SetDesiredState(desiredStates[i]);
-        if (max > driveMax) {
+        if (max > driveMax)
+        {
             driveMax = max;
         }
     }
 
     if (driveMax > kDriveMaxVoltage)
-        driveMax = DriveConstants::kDriveMaxVoltage / driveMax;
+        driveMax = units::volt_t{kDriveMaxVoltage.value() / driveMax.value()};
     else
         driveMax = units::voltage::volt_t(1);
 
@@ -241,6 +243,6 @@ void DrivetrainSubsystem::LoadWheelOffsets()
 {
     for (DiffSwerveModule *module : moduleArray)
         module->LoadZeroOffset();
-    
+
     fmt::print("INFO: LoadWheelOffsets Complete\n");
 }

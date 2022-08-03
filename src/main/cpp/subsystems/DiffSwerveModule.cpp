@@ -151,10 +151,11 @@ units::voltage::volt_t DiffSwerveModule::SetDesiredState(const frc::SwerveModule
     m_expectedAngle.Append(state.angle.Radians().value());
 
     // Calculate the drive output from the drive PID controller.
-    const double driveOutput = m_drivePIDController.Calculate(m_driveSpeed.value(), m_desiredSpeed.value());
+    const units::volt_t driveOutput = units::volt_t{m_drivePIDController.Calculate(m_driveSpeed.value(), m_desiredSpeed.value())};
+
     frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Drive Speed", m_driveSpeed.value());
     frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Desired Speed", m_desiredSpeed.value());
-    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Drive Output", driveOutput);
+    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Drive Output", driveOutput.value());
 
     // Calculate the turning motor output from the turning PID controller.
     double turnOutput = m_turningPIDController.Calculate(m_moduleAngle, m_desiredAngle);
@@ -169,10 +170,10 @@ units::voltage::volt_t DiffSwerveModule::SetDesiredState(const frc::SwerveModule
     const units::voltage::volt_t driveFeedForward{m_driveFeedForward.Calculate(m_desiredSpeed)};
 
     m_topVoltage =
-        units::volt_t(driveOutput + driveFeedForward.value() + DriveConstants::kDriveMaxVoltage * turnOutput);
+        driveOutput + driveFeedForward + DriveConstants::kDriveMaxVoltage * turnOutput;
 
     m_bottomVoltage =
-        units::volt_t(-driveOutput - driveFeedForward.value() + DriveConstants::kDriveMaxVoltage * turnOutput);
+        -driveOutput - driveFeedForward + DriveConstants::kDriveMaxVoltage * turnOutput;
 
     return std::max(m_topVoltage, m_bottomVoltage);
 }
@@ -181,7 +182,7 @@ units::voltage::volt_t DiffSwerveModule::SetDesiredState(const frc::SwerveModule
 
 void DiffSwerveModule::SetVoltage(units::voltage::volt_t driveMax)
 {
-    //TODO: replace .Set with .SetVoltage
+    // TODO: replace .Set with .SetVoltage
     m_topMotor.Set(ControlMode::PercentOutput, (m_topVoltage * driveMax / DriveConstants::kDriveMaxVoltage).value());
     m_bottomMotor.Set(ControlMode::PercentOutput, (m_bottomVoltage * driveMax / DriveConstants::kDriveMaxVoltage).value());
 }
