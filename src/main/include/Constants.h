@@ -30,6 +30,9 @@ namespace GlobalConstants
 
 namespace DriveConstants
 {
+    constexpr double driveMaxVoltage = 10;
+    constexpr auto kMaxSpeed = units::meters_per_second_t(4);
+
     // TODO: Get real values for these constants
     const units::meter_t kTrackWidth = 0.432_m; // Distance between centers of right and left wheels on robot
     const units::meter_t kWheelBase = 0.686_m;  // Distance between centers of front and back wheels on robot
@@ -62,11 +65,11 @@ namespace DriveConstants
         const std::string name = "rearRight";
         const frc::Translation2d translation = frc::Translation2d(kWheelBase / 2, -kTrackWidth / 2);
     }
-
-    constexpr double driveMaxVoltage = 10;
-
-
-    constexpr auto kMaxSpeed = units::meters_per_second_t(4);
+    
+    namespace Gyro {
+        constexpr double kP = 0.01 * 6; // original is 0.007
+        constexpr double kMAX = 0.6 * 6;
+    }
 } // namespace DriveConstants
 
 // ==========================================================================
@@ -78,12 +81,13 @@ namespace ModuleConstants
     constexpr double kPModuleTurningController = 1 / wpi::numbers::pi;
     // constexpr double kPModuleTurningController = 100;
     constexpr double kPModuleDriveController = 0.5; // 0.025;
-    constexpr double kMaxTurnOutput = .5;
+    constexpr double kMaxTurnOutput = 0.5;
 
     // DriveFFConstants
     // constexpr auto ks = .64705_V;
     // constexpr auto kv = 2.2489 * 1_V * 1_s / 1_m;
     // constexpr auto ka = .26974 * 1_V * 1_s * 1_s / 1_m;
+    
     constexpr auto ks = 0.2_V;
     constexpr auto kv = 0.012 * 1_V * 1_s / 1_m;
     constexpr auto ka = .1 * 1_V * 1_s * 1_s / 1_m;
@@ -92,6 +96,12 @@ namespace ModuleConstants
     constexpr double kTurnGearRatio = 28;
 
     constexpr double kDriveWheelDiameterInches = 1.1;
+
+    constexpr units::radians_per_second_t kMaxAngularVelocity =
+        units::radians_per_second_t(wpi::numbers::pi * 100.0); // radians per second
+
+    constexpr units::radians_per_second_squared_t kMaxAngularAcceleration =
+        units::radians_per_second_squared_t(wpi::numbers::pi * 2.0 * 100.0); // radians per second squared
 } // namespace ModuleConstants
 
 // ==========================================================================

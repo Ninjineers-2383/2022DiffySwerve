@@ -26,7 +26,7 @@ class DiffSwerveModule
             units::inverse<units::squared<units::second>>>;
 
 public:
-    DiffSwerveModule(int topMotorChannel, int bottomMotorChannel, int encoderPort, std::string name, std::string CANbus, wpi::log::DataLog &log);
+    DiffSwerveModule(const int topMotorChannel, const int bottomMotorChannel, const int encoderPort, std::string name, std::string CANbus, wpi::log::DataLog &log);
 
     frc::SwerveModuleState GetState();
 
@@ -58,11 +58,7 @@ public:
     wpi::log::DoubleLogEntry m_expectedAngle;
 
 private:
-    static constexpr units::radians_per_second_t kModuleMaxAngularVelocity =
-        units::radians_per_second_t(wpi::numbers::pi * 100.0); // radians per second
-
-    static constexpr units::radians_per_second_squared_t kModuleMaxAngularAcceleration =
-        units::radians_per_second_squared_t(wpi::numbers::pi * 2.0 * 100.0); // radians per second squared
+    
 
     WPI_TalonFX m_topMotor;
     WPI_TalonFX m_bottomMotor;
@@ -89,7 +85,7 @@ private:
         ModuleConstants::kPModuleTurningController,
         0.0,
         0.0,
-        {kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration}};
+        {ModuleConstants::kMaxAngularVelocity, ModuleConstants::kMaxAngularAcceleration}};
 
     double m_offset;
 
@@ -98,4 +94,5 @@ private:
 
     units::meters_per_second_t m_driveSpeed;
     units::radian_t m_moduleAngle;
+    
 };

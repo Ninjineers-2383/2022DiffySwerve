@@ -145,4 +145,5 @@ private:
     double m_currentYaw = 0;
     int m_counter = 0; // Counter for USER button zero reset
     units::radians_per_second_t m_vr;
+
 };

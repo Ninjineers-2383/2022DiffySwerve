@@ -8,9 +8,8 @@
 #include <frc2/command/CommandHelper.h>
 
 #include <frc/Joystick.h>
-#include <networktables/NetworkTableInstance.h>
-
 #include "subsystems/DrivetrainSubsystem.h"
+#include <functional>
 
 /**
  * An example command that uses an example subsystem.
@@ -28,7 +27,7 @@ public:
      *
      * @param subsystem The subsystem used by this command.
      */
-    explicit JoystickDriveCommand(DrivetrainSubsystem *drivetrain, frc::Joystick *joystick);
+    explicit JoystickDriveCommand(DrivetrainSubsystem *drivetrain, std::function<double()> xInput, std::function<double()> yInput, std::function<double()> zInput, std::function<bool()> fieldCentricToggle);
 
     void Execute() override;
     void End(bool interrupted) override;
@@ -36,6 +35,8 @@ public:
 
 private:
     DrivetrainSubsystem *m_drivetrain;
-    frc::Joystick *m_joystick;
-    nt::NetworkTableInstance m_table;
+    std::function<double()> m_xInput;
+    std::function<double()> m_yInput;
+    std::function<double()> m_zInput;
+    std::function<bool()> m_fieldCentricToggle;
 };

@@ -232,10 +232,9 @@ void DrivetrainSubsystem::GyroCrab(double x, double y, double desiredAngle)
         twist += 360.0;
     }
 
-    constexpr double GYRO_P = 0.01 * 6; // original is 0.007
-    constexpr double GYRO_MAX = 0.6 * 6;
+    
 
-    twist = std::clamp(twist * GYRO_P, -GYRO_MAX, GYRO_MAX);
+    twist = std::clamp(twist * Gyro::kP, -Gyro::kMAX, Gyro::kMAX);
 
     Drive(units::meters_per_second_t(x), units::meters_per_second_t(y), units::radians_per_second_t(twist));
 }
