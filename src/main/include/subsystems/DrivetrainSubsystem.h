@@ -28,9 +28,6 @@ class DrivetrainSubsystem : public frc2::SubsystemBase
 public:
     DrivetrainSubsystem(wpi::log::DataLog &log);
 
-    /**
-     * Will be called periodically whenever the CommandScheduler runs.
-     */
     void Periodic() override;
 
     void SimulationPeriodic() override;
@@ -58,8 +55,10 @@ public:
 
     /**
      * Sets the drive MotorControllers to a power from -1 to 1.
+     * 
+     * @param desiredStates array for target states
      */
-    void SetModuleStates(wpi::array<frc::SwerveModuleState, 4> &desiredStates);
+    void SetModuleStates(wpi::array<frc::SwerveModuleState, DriveConstants::kModuleCount> &desiredStates);
 
     /**
      * Returns the heading of the robot.
@@ -75,6 +74,8 @@ public:
 
     /**
      * Sets the heading of the robot to offset parameter.
+     * 
+     * @param heading target heading
      */
     void SetOffsetHeading(int heading);
 
@@ -101,28 +102,45 @@ public:
 
 
 
-    frc::SwerveDriveKinematics<4> kDriveKinematics{
+    frc::SwerveDriveKinematics<DriveConstants::kModuleCount> kDriveKinematics{
         DriveConstants::FrontRightModule::translation,
         DriveConstants::RearRightModule::translation,
         DriveConstants::FrontLeftModule::translation,
         DriveConstants::RearRightModule::translation};
 
+    /** turn off both motors */
     void MotorsOff();
 
+    /* toggles field centric mode */
     void ToggleFieldCentric();
+
+    /**
+     * set field centric mode
+     * 
+     * @param fieldCentric target state
+     */
     void SetFieldCentric(bool fieldCentric);
 
+    /**
+     * gyro-assisted movement
+     * 
+     * @param x speed
+     * @param y speed
+     */
     void GyroCrab(double x, double y, double desiredAngle);
 
+    /* set wheel offsets for modules */
     void SetWheelOffsets();
-    void LoadWheelOffsets();
 
-    double GetOffset();
+    /* loads wheel offsets on modules */
+    void LoadWheelOffsets();
 
     DiffSwerveModule m_frontLeft;
     DiffSwerveModule m_rearLeft;
     DiffSwerveModule m_frontRight;
     DiffSwerveModule m_rearRight;
+
+    DiffSwerveModule *moduleArray [DriveConstants::kModuleCount] = {&m_frontLeft, &m_frontRight, &m_frontRight, &m_rearRight};
 
 private:
     // The gyro sensor

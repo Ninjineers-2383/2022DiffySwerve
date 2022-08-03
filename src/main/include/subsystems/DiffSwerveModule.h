@@ -26,26 +26,53 @@ class DiffSwerveModule
             units::inverse<units::squared<units::second>>>;
 
 public:
+    /**
+     * Differential Swerve Module
+     * 
+     * @param topMotorChannel can ID of top falcon
+     * @param bottomMotorChannel can ID of bottom falcon
+     * @param encoderPort port number of REV Throughbore
+     * @param name string for module name
+     * @param CANbus string for CANbus
+     * @param log wpi datalog
+     */
     DiffSwerveModule(const int topMotorChannel, const int bottomMotorChannel, const int encoderPort, std::string name, std::string CANbus, wpi::log::DataLog &log);
 
+    /**
+     * @return state of module
+     */
     frc::SwerveModuleState GetState();
 
-    double SetDesiredState(const frc::SwerveModuleState &desiredState);
+    /**
+     * Set state of module
+     * @param desiredState target state
+     */
+    units::voltage::volt_t SetDesiredState(const frc::SwerveModuleState &desiredState);
 
+    /* Reset encoders */
     void ResetEncoders();
 
-    // Set the offset angle for all modules.
-    void SetWheelOffset();
-    void LoadWheelOffset();
+    /* Set the offset angle */
+    void SetZeroOffset();
 
+    /* Load offset angle */
+    void LoadZeroOffset();
+
+    /* Turn off both motors */
     void MotorsOff();
-    // Drive speed in Meters per second
+
+    /* Get drive speed */
     units::meters_per_second_t GetDriveSpeed(double topSpeed, double bottomSpeed);
 
-    void SetVoltage(double driveMax);
+    /* Update motor powers */
+    void SetVoltage(units::voltage::volt_t driveMax);
 
+    /* Simulate modules */
     void Simulate();
 
+    /**
+     *  @return Module angle
+     */
     units::degree_t GetModuleAngle();
 
     wpi::log::DoubleLogEntry m_topMotorCurrent;

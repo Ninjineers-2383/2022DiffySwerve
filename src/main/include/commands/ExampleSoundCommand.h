@@ -12,11 +12,7 @@
 
 
 /**
- * An example command that uses an example subsystem.
- *
- * <p>Note that this extends CommandHelper, rather extending CommandBase
- * directly; this is crucially important, or else the decorator functions in
- * Command will *not* work!
+ * An example command for sending sound cues over network tables
  */
 class ExampleSoundCommand
     : public frc2::CommandHelper<frc2::CommandBase, ExampleSoundCommand> {

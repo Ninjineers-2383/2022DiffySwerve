@@ -12,20 +12,20 @@
 #include <functional>
 
 /**
- * An example command that uses an example subsystem.
- *
- * <p>Note that this extends CommandHelper, rather extending CommandBase
- * directly; this is crucially important, or else the decorator functions in
- * Command will *not* work!
+ * Joystick drive command responsible for Teleop control of the drivetrain subsystem
  */
 class JoystickDriveCommand
     : public frc2::CommandHelper<frc2::CommandBase, JoystickDriveCommand>
 {
 public:
     /**
-     * Creates a new ExampleCommand.
+     * Joystick drive command responsible for Teleop control of the drivetrain subsystem
      *
-     * @param subsystem The subsystem used by this command.
+     * @param drivetrain Drivetrain subsystem
+     * @param xInput Input for x motion
+     * @param yInput Input for y motion
+     * @param zInput Input for rotation
+     * @param fieldCentricToggle Input for disabling field-centric
      */
     explicit JoystickDriveCommand(DrivetrainSubsystem *drivetrain, std::function<double()> xInput, std::function<double()> yInput, std::function<double()> zInput, std::function<bool()> fieldCentricToggle);
 

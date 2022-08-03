@@ -29,9 +29,12 @@ namespace GlobalConstants
 }
 
 namespace DriveConstants
-{
-    constexpr double driveMaxVoltage = 10;
-    constexpr auto kMaxSpeed = units::meters_per_second_t(4);
+{   constexpr int kModuleCount = 4;
+
+    constexpr units::voltage::volt_t kDriveMaxVoltage = 
+        units::voltage::volt_t(10);
+    constexpr units::velocity::meters_per_second_t kMaxSpeed = 
+        units::meters_per_second_t(4);
 
     // TODO: Get real values for these constants
     const units::meter_t kTrackWidth = 0.432_m; // Distance between centers of right and left wheels on robot
@@ -42,28 +45,32 @@ namespace DriveConstants
         constexpr int kBottomMotorPort = 21;
         constexpr int kEncoderPort = 1;
         const std::string name = "frontLeft";
-        const frc::Translation2d translation = frc::Translation2d(-kWheelBase / 2, kTrackWidth / 2);
+        const frc::Translation2d translation = 
+            frc::Translation2d(-kWheelBase / 2, kTrackWidth / 2);
     }
     namespace FrontRightModule {
         constexpr int kTopMotorPort = 22;
         constexpr int kBottomMotorPort = 23;
         constexpr int kEncoderPort = 2;
         const std::string name = "frontRight";
-        const frc::Translation2d translation = frc::Translation2d(kWheelBase / 2, kTrackWidth / 2);
+        const frc::Translation2d translation = 
+            frc::Translation2d(kWheelBase / 2, kTrackWidth / 2);
     }
     namespace RearLeftModule {
         constexpr int kTopMotorPort = 24;
         constexpr int kBottomMotorPort = 25;
         constexpr int kEncoderPort = 3;
         const std::string name = "rearLeft";
-        const frc::Translation2d translation = frc::Translation2d(-kWheelBase / 2, -kTrackWidth / 2);
+        const frc::Translation2d translation = 
+            frc::Translation2d(-kWheelBase / 2, -kTrackWidth / 2);
     }
     namespace RearRightModule {
         constexpr int kTopMotorPort = 24;
         constexpr int kBottomMotorPort = 25;
         constexpr int kEncoderPort = 3;
         const std::string name = "rearRight";
-        const frc::Translation2d translation = frc::Translation2d(kWheelBase / 2, -kTrackWidth / 2);
+        const frc::Translation2d translation = 
+            frc::Translation2d(kWheelBase / 2, -kTrackWidth / 2);
     }
     
     namespace Gyro {
@@ -76,19 +83,18 @@ namespace DriveConstants
 
 namespace ModuleConstants
 {
-    constexpr double MAX_CURRENT = 80.0;
+    constexpr units::ampere_t kMaxCurrent = 80.0_A;
 
     constexpr double kPModuleTurningController = 1 / wpi::numbers::pi;
-    // constexpr double kPModuleTurningController = 100;
     constexpr double kPModuleDriveController = 0.5; // 0.025;
     constexpr double kMaxTurnOutput = 0.5;
 
-    // DriveFFConstants
+    // Marswars settings
     // constexpr auto ks = .64705_V;
     // constexpr auto kv = 2.2489 * 1_V * 1_s / 1_m;
     // constexpr auto ka = .26974 * 1_V * 1_s * 1_s / 1_m;
     
-    constexpr auto ks = 0.2_V;
+    constexpr units::voltage::volt_t ks = 0.2_V;
     constexpr auto kv = 0.012 * 1_V * 1_s / 1_m;
     constexpr auto ka = .1 * 1_V * 1_s * 1_s / 1_m;
 
@@ -111,5 +117,3 @@ namespace OIConstants
     constexpr int kDriverControllerPort = 0;
     constexpr int kOperatorControllerPort = 1;
 }
-
-// ==========================================================================

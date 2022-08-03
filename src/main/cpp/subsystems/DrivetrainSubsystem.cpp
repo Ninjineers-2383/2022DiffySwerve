@@ -44,10 +44,10 @@ DrivetrainSubsystem::DrivetrainSubsystem(wpi::log::DataLog &log)
 
 void DrivetrainSubsystem::Periodic()
 {
-    auto frontLeftState = m_frontLeft.GetState();
-    auto rearLeftState = m_rearLeft.GetState();
-    auto frontRightState = m_frontRight.GetState();
-    auto rearRightState = m_rearRight.GetState();
+    frc::SwerveModuleState frontLeftState = m_frontLeft.GetState();
+    frc::SwerveModuleState rearLeftState = m_rearLeft.GetState();
+    frc::SwerveModuleState frontRightState = m_frontRight.GetState();
+    frc::SwerveModuleState rearRightState = m_rearRight.GetState();
 
     auto [vx, vy, vr] = kDriveKinematics.ToChassisSpeeds(frontLeftState, frontRightState, rearLeftState, rearRightState);
     m_vr = vr;
@@ -79,9 +79,7 @@ void DrivetrainSubsystem::Periodic()
     }
 
     if (m_counter > 0)
-    {
         m_counter -= 1;
-    }
 }
 
 void DrivetrainSubsystem::SimulationPeriodic()
@@ -91,7 +89,7 @@ void DrivetrainSubsystem::SimulationPeriodic()
     m_frontRight.Simulate();
     m_rearRight.Simulate();
 
-    m_pigeonSim.AddHeading(units::degrees_per_second_t{m_vr}.value() * 0.02);
+    m_pigeonSim.AddHeading(units::degrees_per_second_t(m_vr).value() * 0.02);
 }
 
 // ==========================================================================
@@ -111,36 +109,34 @@ void DrivetrainSubsystem::Drive(
 
 // ==========================================================================
 
-void DrivetrainSubsystem::SetModuleStates(wpi::array<frc::SwerveModuleState, 4> &desiredStates)
+void DrivetrainSubsystem::SetModuleStates(wpi::array<frc::SwerveModuleState, kModuleCount> &desiredStates)
 {
-    kDriveKinematics.DesaturateWheelSpeeds(&desiredStates, DriveConstants::kMaxSpeed);
+    kDriveKinematics.DesaturateWheelSpeeds(&desiredStates, kMaxSpeed);
 
-    double flMax = m_frontLeft.SetDesiredState(desiredStates[0]);
-    double frMax = m_frontRight.SetDesiredState(desiredStates[1]);
-    double blMax = m_rearLeft.SetDesiredState(desiredStates[2]);
-    double brMax = m_rearRight.SetDesiredState(desiredStates[3]);
+    units::voltage::volt_t driveMax = units::voltage::volt_t(0);
 
-    double driveMax = std::max(std::max(blMax, brMax), std::max(flMax, frMax));
+    for (int i = 0; i < kModuleCount; i ++) {
+        const units::voltage::volt_t max = moduleArray[i]->SetDesiredState(desiredStates[i]);
+        if (max > driveMax) {
+            driveMax = max;
+        }
+    }
 
-    if (driveMax > DriveConstants::driveMaxVoltage)
-        driveMax = DriveConstants::driveMaxVoltage / driveMax;
+    if (driveMax > kDriveMaxVoltage)
+        driveMax = DriveConstants::kDriveMaxVoltage / driveMax;
     else
-        driveMax = 1;
+        driveMax = units::voltage::volt_t(1);
 
-    m_frontLeft.SetVoltage(driveMax);
-    m_frontRight.SetVoltage(driveMax);
-    m_rearLeft.SetVoltage(driveMax);
-    m_rearRight.SetVoltage(driveMax);
+    for (DiffSwerveModule *module : moduleArray)
+        module->SetVoltage(driveMax);
 }
 
 // ==========================================================================
 
 void DrivetrainSubsystem::ResetEncoders()
 {
-    m_frontLeft.ResetEncoders();
-    m_rearLeft.ResetEncoders();
-    m_frontRight.ResetEncoders();
-    m_rearRight.ResetEncoders();
+    for (DiffSwerveModule *module : moduleArray)
+        module->ResetEncoders();
 }
 
 // ==========================================================================
@@ -193,10 +189,8 @@ void DrivetrainSubsystem::ResetOdometry(frc::Pose2d pose)
 
 void DrivetrainSubsystem::MotorsOff()
 {
-    m_frontLeft.MotorsOff();
-    m_rearLeft.MotorsOff();
-    m_frontRight.MotorsOff();
-    m_rearRight.MotorsOff();
+    for (DiffSwerveModule *module : moduleArray)
+        module->MotorsOff();
 }
 
 // ==========================================================================
@@ -221,18 +215,11 @@ void DrivetrainSubsystem::GyroCrab(double x, double y, double desiredAngle)
     while (currentAngle < -180.)
         currentAngle += 360.;
 
-    auto twist = (desiredAngle - currentAngle);
-
+    double twist = (desiredAngle - currentAngle);
     while (twist > 180.0)
-    {
         twist -= 360.0;
-    }
     while (twist < -180.0)
-    {
         twist += 360.0;
-    }
-
-    
 
     twist = std::clamp(twist * Gyro::kP, -Gyro::kMAX, Gyro::kMAX);
 
@@ -243,10 +230,8 @@ void DrivetrainSubsystem::GyroCrab(double x, double y, double desiredAngle)
 
 void DrivetrainSubsystem::SetWheelOffsets()
 {
-    m_frontLeft.SetWheelOffset();
-    m_rearLeft.SetWheelOffset();
-    m_frontRight.SetWheelOffset();
-    m_rearRight.SetWheelOffset();
+    for (DiffSwerveModule *module : moduleArray)
+        module->SetZeroOffset();
     fmt::print("INFO: SetWheelOffsets Complete\n");
 }
 
@@ -254,9 +239,8 @@ void DrivetrainSubsystem::SetWheelOffsets()
 
 void DrivetrainSubsystem::LoadWheelOffsets()
 {
-    m_frontLeft.LoadWheelOffset();
-    m_rearLeft.LoadWheelOffset();
-    m_frontRight.LoadWheelOffset();
-    m_rearRight.LoadWheelOffset();
+    for (DiffSwerveModule *module : moduleArray)
+        module->LoadZeroOffset();
+    
     fmt::print("INFO: LoadWheelOffsets Complete\n");
 }
