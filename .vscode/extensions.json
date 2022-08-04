@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "aaron-bond.better-comments",
+        "alefragnani.bookmarks",
+        "ms-vscode.cpptools",
+        "streetsidesoftware.code-spell-checker",
+        "gruntfuggly.todo-tree",
+        "wpilibsuite.vscode-wpilib"
+    ]
+}

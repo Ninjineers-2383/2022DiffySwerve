@@ -1,6 +1,8 @@
 {
   "java.configuration.updateBuildConfiguration": "disabled",
   "java.import.gradle.enabled": false,
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
   "files.exclude": {
     "**/.git": true,
     "**/.svn": true,
@@ -85,5 +87,8 @@
     "CANivore",
     "Desaturate",
     "Odometry"
-  ]
+  ],
+  "[cpp]": {
+    "editor.defaultFormatter": "ms-vscode.cpptools"
+  }
 }
