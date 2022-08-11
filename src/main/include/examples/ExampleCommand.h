@@ -8,7 +8,7 @@
 
 #include <frc2/command/CommandHelper.h>
 
-#include "subsystems/ExampleSubsystem.h"
+#include "examples/ExampleSubsystem.h"
 
 /**
  * An example command that uses an example subsystem.
