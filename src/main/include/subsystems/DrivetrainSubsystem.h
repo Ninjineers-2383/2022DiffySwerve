@@ -1,26 +1,47 @@
 #pragma once
 
 #include <frc/Encoder.h>
+
 #include <frc/drive/MecanumDrive.h>
+
 #include <frc/geometry/Pose2d.h>
+
 #include <frc/geometry/Rotation2d.h>
+
 #include <frc/interfaces/Gyro.h>
+
 #include <frc/kinematics/ChassisSpeeds.h>
+
 #include <frc/kinematics/SwerveDriveKinematics.h>
+
 #include <frc/kinematics/SwerveDriveOdometry.h>
+
 #include <frc/motorcontrol/PWMSparkMax.h>
+
 #include <frc/smartdashboard/Field2d.h>
+
 #include <frc/XboxController.h>
+
 #include <frc/estimator/SwerveDrivePoseEstimator.h>
+
 #include <frc/kinematics/ChassisSpeeds.h>
+
 #include <frc/kinematics/DifferentialDriveWheelSpeeds.h>
+
 #include <frc/DataLogManager.h>
+
 #include <frc2/command/SubsystemBase.h>
+
 #include <wpi/DataLog.h>
+
 #include <networktables/NetworkTable.h>
+
 #include <networktables/NetworkTableEntry.h>
+
 #include <networktables/NetworkTableInstance.h>
+
 #include <ctre/Phoenix.h>
+
 #include "DiffSwerveModule.h"
 
 class DrivetrainSubsystem : public frc2::SubsystemBase
@@ -28,9 +49,6 @@ class DrivetrainSubsystem : public frc2::SubsystemBase
 public:
     DrivetrainSubsystem(wpi::log::DataLog &log);
 
-    /**
-     * Will be called periodically whenever the CommandScheduler runs.
-     */
     void Periodic() override;
 
     void SimulationPeriodic() override;
@@ -58,8 +76,10 @@ public:
 
     /**
      * Sets the drive MotorControllers to a power from -1 to 1.
+     *
+     * @param desiredStates array for target states
      */
-    void SetModuleStates(wpi::array<frc::SwerveModuleState, 3> &desiredStates);
+    void SetModuleStates(wpi::array<frc::SwerveModuleState, DriveConstants::kModuleCount> &desiredStates);
 
     /**
      * Returns the heading of the robot.
@@ -75,6 +95,8 @@ public:
 
     /**
      * Sets the heading of the robot to offset parameter.
+     *
+     * @param heading target heading
      */
     void SetOffsetHeading(int heading);
 
@@ -99,38 +121,60 @@ public:
      */
     void ResetOdometry(frc::Pose2d pose);
 
-    // TODO: Get real values for these constants
-    const units::meter_t kWheelBase = 1_m;  // Distance between modules on robot
+    frc::SwerveDriveKinematics<DriveConstants::kModuleCount> kDriveKinematics{
+        DriveConstants::FrontLeftModule::translation,
+        DriveConstants::FrontRightModule::translation,
+        DriveConstants::RearLeftModule::translation,
+        DriveConstants::RearRightModule::translation};
 
-    frc::SwerveDriveKinematics<3> kDriveKinematics{
-        frc::Translation2d(-kWheelBase / 2 , kWheelBase / ( 2 * sqrt(3))),
-        frc::Translation2d(0_m, -kWheelBase / sqrt(3)),
-        frc::Translation2d(kWheelBase / 2, kWheelBase / ( 2 * sqrt(3)))};
-
+    /** turn off both motors */
     void MotorsOff();
- 
+
+    /* toggles field centric mode */
     void ToggleFieldCentric();
+
+    /**
+     * set field centric mode
+     *
+     * @param fieldCentric target state
+     */
     void SetFieldCentric(bool fieldCentric);
 
+    /**
+     * gyro-assisted movement
+     *
+     * @param x speed
+     * @param y speed
+     */
     void GyroCrab(double x, double y, double desiredAngle);
 
+    /* set wheel offsets for modules */
     void SetWheelOffsets();
+
+    /* loads wheel offsets on modules */
     void LoadWheelOffsets();
 
-    double GetOffset();
-
     DiffSwerveModule m_frontLeft;
-    DiffSwerveModule m_rear;
     DiffSwerveModule m_frontRight;
+    DiffSwerveModule m_rearLeft;
+    DiffSwerveModule m_rearRight;
+
+    DiffSwerveModule *moduleArray[DriveConstants::kModuleCount] = {
+        &m_frontLeft,
+        &m_frontRight,
+        &m_rearLeft,
+        &m_rearRight};
 
 private:
     // The gyro sensor
-    WPI_Pigeon2 m_pigeon{0, GlobalConstants::kRIOBus};
+    WPI_Pigeon2 m_pigeon{
+        0,
+        GlobalConstants::kRIOBus};
 
     BasePigeonSimCollection m_pigeonSim;
 
     // Odometry class for tracking robot pose
-    frc::SwerveDriveOdometry<3> m_odometry;
+    frc::SwerveDriveOdometry<4> m_odometry;
 
     frc::Field2d m_field;
 

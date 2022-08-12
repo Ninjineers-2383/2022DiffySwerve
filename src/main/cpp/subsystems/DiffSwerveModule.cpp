@@ -1,8 +1,8 @@
 #include "subsystems/DiffSwerveModule.h"
-#include <frc/smartdashboard/SmartDashboard.h>
-#include <units/voltage.h>
 
-// ============================================================================
+#include <frc/smartdashboard/SmartDashboard.h>
+
+#include <units/voltage.h>
 
 DiffSwerveModule::DiffSwerveModule(int topMotorChannel, int bottomMotorChannel, int encoderPort, std::string name, std::string CANbus, wpi::log::DataLog &log)
     : m_topMotor(topMotorChannel, CANbus),
@@ -20,21 +20,24 @@ DiffSwerveModule::DiffSwerveModule(int topMotorChannel, int bottomMotorChannel, 
     m_topMotor.ConfigFactoryDefault();
     m_bottomMotor.ConfigFactoryDefault();
 
-    m_topMotor.ConfigVoltageCompSaturation(DriveConstants::driveMaxVoltage);
+    m_topMotor.ConfigVoltageCompSaturation(DriveConstants::kDriveMaxVoltage.value());
     m_topMotor.EnableVoltageCompensation(true);
-    m_bottomMotor.ConfigVoltageCompSaturation(DriveConstants::driveMaxVoltage);
+    m_bottomMotor.ConfigVoltageCompSaturation(DriveConstants::kDriveMaxVoltage.value());
     m_bottomMotor.EnableVoltageCompensation(true);
 
-    SupplyCurrentLimitConfiguration supply{true, ModuleConstants::MAX_CURRENT, ModuleConstants::MAX_CURRENT, 10};
+    SupplyCurrentLimitConfiguration supply{
+        true,
+        ModuleConstants::kMaxCurrent.value(),
+        ModuleConstants::kMaxCurrent.value(),
+        10};
+
     m_topMotor.ConfigSupplyCurrentLimit(supply);
     m_bottomMotor.ConfigSupplyCurrentLimit(supply);
 
-    // StatorCurrentLimitConfiguration stator{true, MAX_CURRENT, MAX_CURRENT, 10};
-    // m_driveMotor.ConfigStatorCurrentLimit(stator);
-    // m_turningMotor.ConfigStatorCurrentLimit(stator);
-
     m_turningPIDController.EnableContinuousInput(
-        units::radian_t{-wpi::numbers::pi}, units::radian_t(wpi::numbers::pi));
+        units::radian_t{
+            -wpi::numbers::pi},
+        units::radian_t(wpi::numbers::pi));
 
     m_topMotor.SetNeutralMode(NeutralMode::Coast);
     m_bottomMotor.SetNeutralMode(NeutralMode::Coast);
@@ -52,10 +55,7 @@ DiffSwerveModule::DiffSwerveModule(int topMotorChannel, int bottomMotorChannel, 
     m_expectedAngle = wpi::log::DoubleLogEntry(log, "/" + m_name + "/expectedAngle");
 }
 
-// ============================================================================
-
 // called from DriveSubsystem Periodic
-
 frc::SwerveModuleState DiffSwerveModule::GetState()
 {
 
@@ -69,11 +69,8 @@ frc::SwerveModuleState DiffSwerveModule::GetState()
     frc::SmartDashboard::PutNumber("Modules/" + m_name + "/moduleSpeed", m_driveSpeed.value());
 
     // data logging
-    auto topCurrent = m_topMotor.GetStatorCurrent();
-    auto bottomCurrent = m_bottomMotor.GetStatorCurrent();
-
-    m_topMotorCurrent.Append(topCurrent);
-    m_bottomMotorCurrent.Append(bottomCurrent);
+    m_topMotorCurrent.Append(m_topMotor.GetStatorCurrent());
+    m_bottomMotorCurrent.Append(m_bottomMotor.GetStatorCurrent());
 
     m_topMotorRPM.Append(topMotorSpeed);
     m_bottomMotorRPM.Append(bottomMotorSpeed);
@@ -81,7 +78,9 @@ frc::SwerveModuleState DiffSwerveModule::GetState()
     m_wheelSpeed.Append(m_driveSpeed.value());
     m_moduleAngleLog.Append(m_moduleAngle.value());
 
-    return {m_driveSpeed, frc::Rotation2d(m_moduleAngle)};
+    return {
+        m_driveSpeed,
+        frc::Rotation2d(m_moduleAngle)};
 }
 
 void DiffSwerveModule::Simulate()
@@ -107,7 +106,7 @@ void DiffSwerveModule::Simulate()
     m_bottomMotorSim.SetIntegratedSensorVelocity((m_bottomMotorSimulator.GetAngularVelocity().value() / (2 * wpi::numbers::pi)) * 2048 / 10);
 
     // Simulate the encoder
-    auto averagePos = (m_topMotor.GetSelectedSensorPosition() + m_bottomMotor.GetSelectedSensorPosition()) / 2;
+    double averagePos = (m_topMotor.GetSelectedSensorPosition() + m_bottomMotor.GetSelectedSensorPosition()) / 2;
     averagePos /= 2048;
     averagePos /= 28;
     m_encoderSim.Set(units::turn_t{averagePos});
@@ -116,15 +115,13 @@ void DiffSwerveModule::Simulate()
     frc::SmartDashboard::PutNumber("Simulated/" + m_name + "/Encoder/Rotation", GetModuleAngle().value());
 }
 
-// ============================================================================
-
 units::meters_per_second_t DiffSwerveModule::GetDriveSpeed(double topSpeed, double bottomSpeed)
 {
     double speed =
-        ((topSpeed - bottomSpeed) / 2)     /*Average Sensor Velocity (raw/100ms)*/
-        * (10.0 / 2048)                    /*Motor Revolutions per second*/
-        * ModuleConstants::kDriveGearRatio /*Output revolutions per second*/
-        * ((ModuleConstants::kDriveWheelDiameterInches / 39.37) * wpi::numbers::pi) /*Circumference in meters (meters/second)*/;
+        ((topSpeed - bottomSpeed) / 2) /*Average Sensor Velocity (raw/100ms)*/ *
+        (10.0 / 2048) /*Motor Revolutions per second*/ *
+        ModuleConstants::kDriveGearRatio /*Output revolutions per second*/ *
+        ((ModuleConstants::kDriveWheelDiameterInches / 39.37) * wpi::numbers::pi) /*Circumference in meters (meters/second)*/;
 
     frc::SmartDashboard::PutNumber(m_name + " Wheel Speed ", speed);
 
@@ -136,31 +133,31 @@ units::degree_t DiffSwerveModule::GetModuleAngle()
     return units::degree_t((m_encoder.Get().value() * 360) - m_offset);
 }
 
-// ============================================================================
-
-double DiffSwerveModule::SetDesiredState(const frc::SwerveModuleState &desiredState)
+units::voltage::volt_t DiffSwerveModule::SetDesiredState(const frc::SwerveModuleState &desiredState)
 {
 
     // Optimize the reference state to avoid spinning further than 90 degrees
     // const auto state = frc::SwerveModuleState::Optimize(
     //     desiredState, m_moduleAngle);
 
-    const auto state = desiredState;
+    const frc::SwerveModuleState state = desiredState;
 
-    auto m_desiredSpeed = state.speed;
-    auto m_desiredAngle = state.angle.Radians();
+    const units::velocity::meters_per_second_t m_desiredSpeed = state.speed;
+    const units::angle::radian_t m_desiredAngle = state.angle.Radians();
 
     m_expectedSpeed.Append(m_desiredSpeed.value());
     m_expectedAngle.Append(state.angle.Radians().value());
 
     // Calculate the drive output from the drive PID controller.
-    const auto driveOutput = m_drivePIDController.Calculate(m_driveSpeed.value(), m_desiredSpeed.value());
+    const units::volt_t driveOutput = units::volt_t{
+        m_drivePIDController.Calculate(m_driveSpeed.value(), m_desiredSpeed.value())};
+
     frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Drive Speed", m_driveSpeed.value());
     frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Desired Speed", m_desiredSpeed.value());
-    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Drive Output", driveOutput);
+    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Drive Output", driveOutput.value());
 
     // Calculate the turning motor output from the turning PID controller.
-    auto turnOutput = m_turningPIDController.Calculate(m_moduleAngle, m_desiredAngle);
+    double turnOutput = m_turningPIDController.Calculate(m_moduleAngle, m_desiredAngle);
 
     frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Module Angle", m_moduleAngle.value());
     frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Desired Angle", m_desiredAngle.value());
@@ -169,24 +166,23 @@ double DiffSwerveModule::SetDesiredState(const frc::SwerveModuleState &desiredSt
     // Dont turn at more than 50% power
     turnOutput = std::clamp(turnOutput, -ModuleConstants::kMaxTurnOutput, ModuleConstants::kMaxTurnOutput);
 
-    const auto driveFeedForward{m_driveFeedForward.Calculate(m_desiredSpeed)};
+    const units::voltage::volt_t driveFeedForward{
+        m_driveFeedForward.Calculate(m_desiredSpeed)};
 
     m_topVoltage =
-        units::volt_t(driveOutput + driveFeedForward.value() + DriveConstants::driveMaxVoltage * turnOutput);
+        driveOutput + driveFeedForward + DriveConstants::kDriveMaxVoltage * turnOutput;
 
-    m_bottomVoltage =
-        units::volt_t(-driveOutput - driveFeedForward.value() + DriveConstants::driveMaxVoltage * turnOutput);
+    m_bottomVoltage = -driveOutput - driveFeedForward + DriveConstants::kDriveMaxVoltage * turnOutput;
 
-    return std::max(m_topVoltage, m_bottomVoltage).value();
+    return std::max(m_topVoltage, m_bottomVoltage);
 }
 
-void DiffSwerveModule::SetVoltage(double driveMax)
+void DiffSwerveModule::SetVoltage(units::voltage::volt_t driveMax)
 {
-    m_topMotor.Set(ControlMode::PercentOutput, m_topVoltage.value() * driveMax / DriveConstants::driveMaxVoltage);
-    m_bottomMotor.Set(ControlMode::PercentOutput, m_bottomVoltage.value() * driveMax / DriveConstants::driveMaxVoltage);
+    // TODO: replace .Set with .SetVoltage
+    m_topMotor.Set(ControlMode::PercentOutput, (m_topVoltage * driveMax / DriveConstants::kDriveMaxVoltage).value());
+    m_bottomMotor.Set(ControlMode::PercentOutput, (m_bottomVoltage * driveMax / DriveConstants::kDriveMaxVoltage).value());
 }
-
-// ============================================================================
 
 void DiffSwerveModule::ResetEncoders()
 {
@@ -200,23 +196,19 @@ void DiffSwerveModule::MotorsOff()
     m_bottomMotor.Set(ControlMode::PercentOutput, 0);
 }
 
-// =========================Wheel Offsets======================================
-
-void DiffSwerveModule::SetWheelOffset()
+void DiffSwerveModule::SetZeroOffset()
 {
-    auto steerPosition{GetModuleAngle().value() + m_offset};
+    double steerPosition{
+        GetModuleAngle().value() + m_offset};
     fmt::print("INFO: {} steerPosition {}\n", m_name, steerPosition);
     frc::Preferences::SetDouble(m_name, steerPosition);
     m_offset = steerPosition;
 }
 
-// ============================================================================
-
-void DiffSwerveModule::LoadWheelOffset()
+void DiffSwerveModule::LoadZeroOffset()
 {
-    auto steerPosition{frc::Preferences::GetDouble(m_name)};
+    double steerPosition{
+        frc::Preferences::GetDouble(m_name)};
     fmt::print("INFO: {} steerPosition {}\n", m_name, steerPosition);
     m_offset = steerPosition;
 }
-
-// ============================================================================

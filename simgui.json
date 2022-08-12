@@ -39,6 +39,13 @@
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/Ungrouped/class frc2::SubsystemBase": "Subsystem",
       "/SmartDashboard/Field": "Field2d"
+    },
+    "windows": {
+      "/SmartDashboard/Field": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
@@ -127,8 +134,7 @@
         }
       ],
       "window": {
-        "name": "Front Left",
-        "visible": false
+        "name": "Front Left"
       }
     }
   }

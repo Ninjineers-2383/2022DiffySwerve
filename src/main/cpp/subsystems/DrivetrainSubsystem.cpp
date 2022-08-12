@@ -1,28 +1,31 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 #include "subsystems/DrivetrainSubsystem.h"
-//#include <frc/geometry/Rotation2d.h>
+
 #include <frc/RobotController.h>
+
 #include <frc/smartdashboard/SmartDashboard.h>
+
 #include <units/angle.h>
+
 #include <units/angular_velocity.h>
+
 #include <units/velocity.h>
+
 #include "Constants.h"
+
 #include <wpi/numbers>
+
 #include <math.h>
+
 #include <frc/RobotBase.h>
 
 using namespace DriveConstants;
 using namespace GlobalConstants;
 
-// ==========================================================================
-
 DrivetrainSubsystem::DrivetrainSubsystem(wpi::log::DataLog &log)
-    : m_frontLeft{kFrontLeftTopMotorPort, kFrontLeftBottomMotorPort, kFrontLeftEncoderPot, "frontLeft", kCANivoreBus, log},
-      m_rear{kRearTopMotorPort, kRearBottomMotorPort, kRearEncoderPot, "rear", kCANivoreBus, log},
-      m_frontRight{kFrontRightTopMotorPort, kFrontRightBottomMotorPort, kFrontRightEncoderPot, "frontRight", kCANivoreBus, log},
+    : m_frontLeft{FrontLeftModule::kTopMotorPort, FrontLeftModule::kBottomMotorPort, FrontLeftModule::kEncoderPort, FrontLeftModule::name, kCANivoreBus, log},
+      m_rearLeft{RearLeftModule::kTopMotorPort, RearLeftModule::kBottomMotorPort, RearLeftModule::kEncoderPort, RearLeftModule::name, kCANivoreBus, log},
+      m_frontRight{FrontRightModule::kTopMotorPort, FrontRightModule::kBottomMotorPort, FrontRightModule::kEncoderPort, FrontRightModule::name, kCANivoreBus, log},
+      m_rearRight{RearRightModule::kTopMotorPort, RearRightModule::kBottomMotorPort, RearRightModule::kEncoderPort, RearRightModule::name, kCANivoreBus, log},
       m_pigeonSim{m_pigeon.GetSimCollection()},
       m_odometry{kDriveKinematics, GetHeading(), frc::Pose2d()},
       m_lastPose{m_odometry.GetPose()},
@@ -39,15 +42,14 @@ DrivetrainSubsystem::DrivetrainSubsystem(wpi::log::DataLog &log)
     }
 }
 
-// ==========================================================================
-
 void DrivetrainSubsystem::Periodic()
 {
-    auto frontLeftState = m_frontLeft.GetState();
-    auto rearState = m_rear.GetState();
-    auto frontRightState = m_frontRight.GetState();
+    frc::SwerveModuleState frontLeftState = m_frontLeft.GetState();
+    frc::SwerveModuleState frontRightState = m_frontRight.GetState();
+    frc::SwerveModuleState rearLeftState = m_rearLeft.GetState();
+    frc::SwerveModuleState rearRightState = m_rearRight.GetState();
 
-    auto [vx, vy, vr] = kDriveKinematics.ToChassisSpeeds(frontLeftState, frontRightState, rearState);
+    auto [vx, vy, vr] = kDriveKinematics.ToChassisSpeeds(frontLeftState, frontRightState, rearLeftState, rearRightState);
     m_vr = vr;
 
     m_currentYaw = m_pigeon.GetYaw() - m_zero;
@@ -56,7 +58,8 @@ void DrivetrainSubsystem::Periodic()
         GetHeading(),
         frontLeftState,
         frontRightState,
-        rearState);
+        rearLeftState,
+        rearRightState);
 
     frc::SmartDashboard::PutNumber("Gyro", m_currentYaw);
     frc::SmartDashboard::PutBoolean("FieldCentric", m_fieldCentric);
@@ -76,21 +79,18 @@ void DrivetrainSubsystem::Periodic()
     }
 
     if (m_counter > 0)
-    {
         m_counter -= 1;
-    }
 }
 
 void DrivetrainSubsystem::SimulationPeriodic()
 {
     m_frontLeft.Simulate();
-    m_rear.Simulate();
+    m_rearLeft.Simulate();
     m_frontRight.Simulate();
+    m_rearRight.Simulate();
 
-    m_pigeonSim.AddHeading(units::degrees_per_second_t{m_vr}.value() * 0.02);
+    m_pigeonSim.AddHeading(units::degrees_per_second_t(m_vr).value() * 0.02);
 }
-
-// ==========================================================================
 
 void DrivetrainSubsystem::Drive(
     units::meters_per_second_t xSpeed,
@@ -100,78 +100,69 @@ void DrivetrainSubsystem::Drive(
     auto states = kDriveKinematics.ToSwerveModuleStates(
         m_fieldCentric ? frc::ChassisSpeeds::FromFieldRelativeSpeeds(
                              xSpeed, ySpeed, rot, GetHeading())
-                       : frc::ChassisSpeeds{xSpeed, ySpeed, rot});
+                       : frc::ChassisSpeeds{
+                             xSpeed,
+                             ySpeed,
+                             rot});
 
     SetModuleStates(states);
 }
 
-// ==========================================================================
-
-void DrivetrainSubsystem::SetModuleStates(wpi::array<frc::SwerveModuleState, 3> &desiredStates)
+void DrivetrainSubsystem::SetModuleStates(wpi::array<frc::SwerveModuleState, kModuleCount> &desiredStates)
 {
-    kDriveKinematics.DesaturateWheelSpeeds(&desiredStates, DriveConstants::kMaxSpeed);
+    kDriveKinematics.DesaturateWheelSpeeds(&desiredStates, kMaxSpeed);
 
-    double flMax = m_frontLeft.SetDesiredState(desiredStates[0]);
-    double frMax = m_frontRight.SetDesiredState(desiredStates[1]);
-    double bMax = m_rear.SetDesiredState(desiredStates[2]);
+    units::voltage::volt_t driveMax = units::voltage::volt_t(0);
 
-    double driveMax = std::max(bMax, std::max(flMax, frMax));
+    for (int i = 0; i < kModuleCount; i++)
+    {
+        const units::voltage::volt_t max = moduleArray[i]->SetDesiredState(desiredStates[i]);
+        if (max > driveMax)
+        {
+            driveMax = max;
+        }
+    }
 
-    if (driveMax > DriveConstants::driveMaxVoltage)
-        driveMax = DriveConstants::driveMaxVoltage / driveMax;
+    if (driveMax > kDriveMaxVoltage)
+        driveMax = units::volt_t{
+            kDriveMaxVoltage.value() / driveMax.value()};
     else
-        driveMax = 1;
+        driveMax = units::voltage::volt_t(1);
 
-    m_frontLeft.SetVoltage(driveMax);
-    m_frontRight.SetVoltage(driveMax);
-    m_rear.SetVoltage(driveMax);
+    for (DiffSwerveModule *module : moduleArray)
+        module->SetVoltage(driveMax);
 }
-
-// ==========================================================================
 
 void DrivetrainSubsystem::ResetEncoders()
 {
-    m_frontLeft.ResetEncoders();
-    m_rear.ResetEncoders();
-    m_frontRight.ResetEncoders();
+    for (DiffSwerveModule *module : moduleArray)
+        module->ResetEncoders();
 }
-
-// ==========================================================================
 
 units::degree_t DrivetrainSubsystem::GetHeading() const
 {
     return units::degree_t(m_currentYaw); // was negated
 }
 
-// ==========================================================================
-
 void DrivetrainSubsystem::ZeroHeading()
 {
     m_zero = m_pigeon.GetYaw();
 }
-
-// ==========================================================================
 
 void DrivetrainSubsystem::SetOffsetHeading(int heading)
 {
     m_zero = m_pigeon.GetYaw() - heading;
 }
 
-// ==========================================================================
-
 double DrivetrainSubsystem::GetTurnRate()
 {
     return m_pigeon.GetRate();
 }
 
-// ==========================================================================
-
 frc::Pose2d DrivetrainSubsystem::GetPose()
 {
     return m_odometry.GetPose();
 }
-
-// ==========================================================================
 
 void DrivetrainSubsystem::ResetOdometry(frc::Pose2d pose)
 {
@@ -182,16 +173,11 @@ void DrivetrainSubsystem::ResetOdometry(frc::Pose2d pose)
     m_odometry.ResetPosition(pose, frc::Rotation2d(GetHeading()));
 }
 
-// ==========================================================================
-
 void DrivetrainSubsystem::MotorsOff()
 {
-    m_frontLeft.MotorsOff();
-    m_rear.MotorsOff();
-    m_frontRight.MotorsOff();
+    for (DiffSwerveModule *module : moduleArray)
+        module->MotorsOff();
 }
-
-// ==========================================================================
 
 void DrivetrainSubsystem::ToggleFieldCentric()
 {
@@ -203,8 +189,6 @@ void DrivetrainSubsystem::SetFieldCentric(bool fieldCentric)
     m_fieldCentric = fieldCentric;
 }
 
-// ==========================================================================
-
 void DrivetrainSubsystem::GyroCrab(double x, double y, double desiredAngle)
 {
     double currentAngle = GetHeading().value();
@@ -213,40 +197,28 @@ void DrivetrainSubsystem::GyroCrab(double x, double y, double desiredAngle)
     while (currentAngle < -180.)
         currentAngle += 360.;
 
-    auto twist = (desiredAngle - currentAngle);
-
+    double twist = (desiredAngle - currentAngle);
     while (twist > 180.0)
-    {
         twist -= 360.0;
-    }
     while (twist < -180.0)
-    {
         twist += 360.0;
-    }
 
-    constexpr double GYRO_P = 0.01 * 6; // original is 0.007
-    constexpr double GYRO_MAX = 0.6 * 6;
-
-    twist = std::clamp(twist * GYRO_P, -GYRO_MAX, GYRO_MAX);
+    twist = std::clamp(twist * Gyro::kP, -Gyro::kMAX, Gyro::kMAX);
 
     Drive(units::meters_per_second_t(x), units::meters_per_second_t(y), units::radians_per_second_t(twist));
 }
 
-// ================================================================
-
 void DrivetrainSubsystem::SetWheelOffsets()
 {
-    m_frontLeft.SetWheelOffset();
-    m_frontRight.SetWheelOffset();
+    for (DiffSwerveModule *module : moduleArray)
+        module->SetZeroOffset();
     fmt::print("INFO: SetWheelOffsets Complete\n");
 }
 
-// ================================================================
-
 void DrivetrainSubsystem::LoadWheelOffsets()
 {
-    m_frontLeft.LoadWheelOffset();
-    m_rear.LoadWheelOffset();
-    m_frontRight.LoadWheelOffset();
+    for (DiffSwerveModule *module : moduleArray)
+        module->LoadZeroOffset();
+
     fmt::print("INFO: LoadWheelOffsets Complete\n");
 }

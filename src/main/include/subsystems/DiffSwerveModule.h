@@ -1,21 +1,39 @@
 #pragma once
+
 #include <frc/controller/PIDController.h>
+
 #include <frc/controller/ProfiledPIDController.h>
+
 #include <frc/controller/SimpleMotorFeedforward.h>
+
 #include <frc/Encoder.h>
+
 #include <frc/DutyCycleEncoder.h>
+
 #include <frc/simulation/DutyCycleEncoderSim.h>
+
 #include <frc/simulation/DCMotorSim.h>
+
 #include <frc/geometry/Rotation2d.h>
+
 #include <frc/kinematics/SwerveModuleState.h>
+
 #include <frc/motorcontrol/Spark.h>
+
 #include <frc/Preferences.h>
+
 #include <frc/trajectory/TrapezoidProfile.h>
+
 #include <wpi/numbers>
+
 #include <ctre/Phoenix.h>
+
 #include <string>
+
 #include "Constants.h"
+
 #include <frc/DataLogManager.h>
+
 #include <wpi/DataLog.h>
 
 class DiffSwerveModule
@@ -26,26 +44,55 @@ class DiffSwerveModule
             units::inverse<units::squared<units::second>>>;
 
 public:
-    DiffSwerveModule(int topMotorChannel, int bottomMotorChannel, int encoderPort, std::string name, std::string CANbus, wpi::log::DataLog &log);
+    /**
+     * Differential Swerve Module
+     *
+     * @param topMotorChannel can ID of top falcon
+     * @param bottomMotorChannel can ID of bottom falcon
+     * @param encoderPort port number of REV Throughbore
+     * @param name string for module name
+     * @param CANbus string for CANbus
+     * @param log wpi datalog
+     */
+    DiffSwerveModule(const int topMotorChannel,
+                     const int bottomMotorChannel,
+                     const int encoderPort, std::string name, std::string CANbus, wpi::log::DataLog &log);
 
+    /**
+     * @return state of module
+     */
     frc::SwerveModuleState GetState();
 
-    double SetDesiredState(const frc::SwerveModuleState &desiredState);
+    /**
+     * Set state of module
+     * @param desiredState target state
+     */
+    units::voltage::volt_t SetDesiredState(const frc::SwerveModuleState &desiredState);
 
+    /* Reset encoders */
     void ResetEncoders();
 
-    // Set the offset angle for all modules.
-    void SetWheelOffset();
-    void LoadWheelOffset();
+    /* Set the offset angle */
+    void SetZeroOffset();
 
+    /* Load offset angle */
+    void LoadZeroOffset();
+
+    /* Turn off both motors */
     void MotorsOff();
-    // Drive speed in Meters per second
+
+    /* Get drive speed */
     units::meters_per_second_t GetDriveSpeed(double topSpeed, double bottomSpeed);
 
-    void SetVoltage(double driveMax);
+    /* Update motor powers */
+    void SetVoltage(units::voltage::volt_t driveMax);
 
+    /* Simulate modules */
     void Simulate();
 
+    /**
+     *  @return Module angle
+     */
     units::degree_t GetModuleAngle();
 
     wpi::log::DoubleLogEntry m_topMotorCurrent;
@@ -58,12 +105,6 @@ public:
     wpi::log::DoubleLogEntry m_expectedAngle;
 
 private:
-    static constexpr units::radians_per_second_t kModuleMaxAngularVelocity =
-        units::radians_per_second_t(wpi::numbers::pi * 100.0); // radians per second
-
-    static constexpr units::radians_per_second_squared_t kModuleMaxAngularAcceleration =
-        units::radians_per_second_squared_t(wpi::numbers::pi * 2.0 * 100.0); // radians per second squared
-
     WPI_TalonFX m_topMotor;
     WPI_TalonFX m_bottomMotor;
 
@@ -80,7 +121,8 @@ private:
     std::string m_name;
     wpi::log::DataLog &m_log;
 
-    frc::SimpleMotorFeedforward<units::meters> m_driveFeedForward{ModuleConstants::ks, ModuleConstants::kv, ModuleConstants::ka};
+    frc::SimpleMotorFeedforward<units::meters> m_driveFeedForward{
+        ModuleConstants::ks, ModuleConstants::kv, ModuleConstants::ka};
 
     frc2::PIDController m_drivePIDController{
         ModuleConstants::kPModuleDriveController, 0, 0};
@@ -89,7 +131,8 @@ private:
         ModuleConstants::kPModuleTurningController,
         0.0,
         0.0,
-        {kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration}};
+        {ModuleConstants::kMaxAngularVelocity,
+         ModuleConstants::kMaxAngularAcceleration}};
 
     double m_offset;
 
