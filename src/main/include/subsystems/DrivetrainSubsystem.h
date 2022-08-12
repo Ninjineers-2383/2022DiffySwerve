@@ -124,8 +124,7 @@ public:
     frc::SwerveDriveKinematics<DriveConstants::kModuleCount> kDriveKinematics{
         DriveConstants::FrontLeftModule::translation,
         DriveConstants::FrontRightModule::translation,
-        DriveConstants::RearLeftModule::translation,
-        DriveConstants::RearRightModule::translation};
+        DriveConstants::RearModule::translation};
 
     /** turn off both motors */
     void MotorsOff();
@@ -155,15 +154,13 @@ public:
     void LoadWheelOffsets();
 
     DiffSwerveModule m_frontLeft;
+    DiffSwerveModule m_rear;
     DiffSwerveModule m_frontRight;
-    DiffSwerveModule m_rearLeft;
-    DiffSwerveModule m_rearRight;
 
     DiffSwerveModule *moduleArray[DriveConstants::kModuleCount] = {
         &m_frontLeft,
         &m_frontRight,
-        &m_rearLeft,
-        &m_rearRight};
+        &m_rear};
 
 private:
     // The gyro sensor

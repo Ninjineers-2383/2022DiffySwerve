@@ -12,6 +12,8 @@
 
 #include <units/angular_velocity.h>
 
+#include <units/angular_acceleration.h>
+
 #include <units/length.h>
 
 #include <units/time.h>
@@ -19,6 +21,8 @@
 #include <units/velocity.h>
 
 #include <units/voltage.h>
+
+#include <units/current.h>
 
 #include <wpi/numbers>
 
@@ -39,7 +43,7 @@ namespace GlobalConstants
 
 namespace DriveConstants
 {
-    constexpr int kModuleCount = 4;
+    constexpr int kModuleCount = 3;
 
     constexpr units::voltage::volt_t kDriveMaxVoltage =
         units::voltage::volt_t(10);
@@ -68,7 +72,7 @@ namespace DriveConstants
         const frc::Translation2d translation =
             frc::Translation2d(kWheelBase / 2, kTrackWidth / 2);
     }
-    namespace RearLeftModule
+    namespace RearModule
     {
         constexpr int kTopMotorPort = 24;
         constexpr int kBottomMotorPort = 25;
@@ -76,15 +80,6 @@ namespace DriveConstants
         const std::string name = "rearLeft";
         const frc::Translation2d translation =
             frc::Translation2d(-kWheelBase / 2, -kTrackWidth / 2);
-    }
-    namespace RearRightModule
-    {
-        constexpr int kTopMotorPort = 24;
-        constexpr int kBottomMotorPort = 25;
-        constexpr int kEncoderPort = 4;
-        const std::string name = "rearRight";
-        const frc::Translation2d translation =
-            frc::Translation2d(kWheelBase / 2, -kTrackWidth / 2);
     }
     namespace Gyro
     {
