@@ -14,9 +14,9 @@ JoystickDriveCommand::JoystickDriveCommand(DrivetrainSubsystem *drivetrain, std:
 
 void JoystickDriveCommand::Execute()
 {
-    units::velocity::meters_per_second_t xAxis = -frc::ApplyDeadband(m_xInput(), 0.1) * DriveConstants::kMaxSpeed;
-    units::velocity::meters_per_second_t yAxis = -frc::ApplyDeadband(m_yInput(), 0.1) * DriveConstants::kMaxSpeed;
-    units::velocity::meters_per_second_t zAxis = -frc::ApplyDeadband(m_zInput(), 0.1) * DriveConstants::kMaxSpeed;
+    units::velocity::meters_per_second_t xAxis = -throttleSoftener(frc::ApplyDeadband(m_xInput(), 0.1)) * DriveConstants::kMaxSpeed;
+    units::velocity::meters_per_second_t yAxis = -throttleSoftener(frc::ApplyDeadband(m_yInput(), 0.1)) * DriveConstants::kMaxSpeed;
+    units::velocity::meters_per_second_t zAxis = -throttleSoftener(frc::ApplyDeadband(m_zInput(), 0.1)) * DriveConstants::kMaxSpeed;
 
     m_drivetrain->SetFieldCentric(m_fieldCentricToggle());
 
@@ -31,4 +31,11 @@ void JoystickDriveCommand::End(bool interrupted)
 bool JoystickDriveCommand::IsFinished()
 {
     return false;
+}
+
+double throttleSoftener(double input)
+{
+    constexpr double gain = 0.5; // Minimum gain is -0.5 before things start doing weird things
+    double result = gain * (input * input * input) + (1 - gain) * input;
+    return result;
 }
