@@ -20,6 +20,8 @@
 
 #include <units/voltage.h>
 
+#include <units/current.h>
+
 #include <wpi/numbers>
 
 /**
@@ -79,8 +81,8 @@ namespace DriveConstants
     }
     namespace RearRightModule
     {
-        constexpr int kTopMotorPort = 24;
-        constexpr int kBottomMotorPort = 25;
+        constexpr int kTopMotorPort = 26;
+        constexpr int kBottomMotorPort = 27;
         constexpr int kEncoderPort = 4;
         const std::string name = "rearRight";
         const frc::Translation2d translation =
@@ -126,4 +128,9 @@ namespace OIConstants
 {
     constexpr int kDriverControllerPort = 0;
     constexpr int kOperatorControllerPort = 1;
+}
+
+namespace FeederConstants
+{
+    constexpr int kFeederMotorPort = 2;
 }
