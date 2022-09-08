@@ -83,7 +83,7 @@ bool FlywheelSubsystem::IsReady()
         ready = m_flywheelMaster.GetSelectedSensorVelocity() >= m_flywheelMaster.GetClosedLoopTarget() - FlywheelConstants::Tolerance &&
                 m_flywheelMaster.GetSelectedSensorVelocity() <= m_flywheelMaster.GetClosedLoopTarget() + FlywheelConstants::Tolerance;
     }
-    frc::SmartDashboard::PutBoolean("Launcher IsReady: ", ready);
+    frc::SmartDashboard::PutBoolean("Flywheel IsReady: ", ready);
     return ready;
 }
 

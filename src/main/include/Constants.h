@@ -131,7 +131,23 @@ namespace FlywheelConstants
     constexpr int followerPort = 2;
 }
 
+namespace Turret
+{
+    static const int PORT = 3;
+    static const int BOUNDS = 45000;
+    static const double SEEKING_POWER = 50000;
+    static const double ADJUST_POWER = 4000;
+    static const double kP = 70;
+    static const double kP_CENTER = 0.21;
+    static const int OFFSET_TICKS = -10000;
+}
+
 namespace ChimneyConstants
 {
-    constexpr int Port = 3;
+    constexpr int Port = 4;
+}
+
+namespace Kicker
+{
+    static const int PORT = 5;
 }
