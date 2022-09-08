@@ -81,15 +81,7 @@ namespace DriveConstants
         const frc::Translation2d translation =
             frc::Translation2d(-kWheelBase / 2, -kTrackWidth / 2);
     }
-    namespace RearRightModule
-    {
-        constexpr int kTopMotorPort = 26;
-        constexpr int kBottomMotorPort = 27;
-        constexpr int kEncoderPort = 4;
-        const std::string name = "rearRight";
-        const frc::Translation2d translation =
-            frc::Translation2d(kWheelBase / 2, -kTrackWidth / 2);
-    }
+
     namespace Gyro
     {
         constexpr double kP = 0.01 * 6; // original is 0.007
@@ -135,4 +127,11 @@ namespace OIConstants
 namespace FlywheelConstants
 {
     constexpr int Tolerance = 200;
+    constexpr int masterPort = 1;
+    constexpr int followerPort = 2;
+}
+
+namespace ChimneyConstants
+{
+    constexpr int Port = 3;
 }

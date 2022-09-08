@@ -5,9 +5,9 @@
 #include <units/voltage.h>
 
 // Class Declaration
-FlywheelSubsystem::FlywheelSubsystem(int flywheelMasterChannel, int flywheelFollowerChannel, std::string name, std::string CANbus, wpi::log::DataLog &log)
-    : m_flywheelMaster(flywheelMasterChannel, CANbus),
-      m_flywheelFollower(flywheelFollowerChannel, CANbus),
+FlywheelSubsystem::FlywheelSubsystem(std::string name, std::string CANbus, wpi::log::DataLog &log)
+    : m_flywheelMaster(FlywheelConstants::masterPort, CANbus),
+      m_flywheelFollower(FlywheelConstants::followerPort, CANbus),
       m_flywheelMasterSim{m_flywheelMaster.GetSimCollection()},
       m_flywheelFollowerSim{m_flywheelFollower.GetSimCollection()},
       m_flywheelMasterSimulator{frc::DCMotor::Falcon500(), 1, units::kilogram_square_meter_t{0.0005}},

@@ -8,15 +8,7 @@
 
 #include <frc/Encoder.h>
 
-#include <frc/DutyCycleEncoder.h>
-
-#include <frc/simulation/DutyCycleEncoderSim.h>
-
 #include <frc/simulation/DCMotorSim.h>
-
-#include <frc/geometry/Rotation2d.h>
-
-#include <frc/kinematics/SwerveModuleState.h>
 
 #include <frc/motorcontrol/Spark.h>
 
@@ -36,109 +28,64 @@
 
 #include <wpi/DataLog.h>
 
-class DiffSwerveModule
-{
-    using radians_per_second_squared_t =
-        units::compound_unit<
-            units::radians,
-            units::inverse<units::squared<units::second>>>;
+#include <frc2/command/SubsystemBase.h>
 
+class FlywheelSubsystem : frc2::SubsystemBase
+{
 public:
-    /**
+    FlywheelSubsystem(std::string name, std::string CANbus, wpi::log::DataLog &log);
+    /*
      * Differential Swerve Module
      *
-     * @param topMotorChannel can ID of top falcon
-     * @param bottomMotorChannel can ID of bottom falcon
-     * @param encoderPort port number of REV Throughbore
+     * @param flywheelMasterPort can ID of master flywheel falcon
+     * @param flywheelFollowerPort can ID of follower flywheel falcon
      * @param name string for module name
      * @param CANbus string for CANbus
      * @param log wpi datalog
      */
-    DiffSwerveModule(const int topMotorChannel,
-                     const int bottomMotorChannel,
-                     const int encoderPort, std::string name, std::string CANbus, wpi::log::DataLog &log);
-
-    /**
-     * @return state of module
-     */
-    frc::SwerveModuleState GetState();
-
     /**
      * Set state of module
-     * @param desiredState target state
+     * @param desiredState
      */
-    units::voltage::volt_t SetDesiredState(const frc::SwerveModuleState &desiredState);
+    /* Periodic */
+    void Periodic() override;
 
-    /* Reset encoders */
-    void ResetEncoders();
+    /* Flywheel spin */
+    void Spin(double velocity);
 
-    /* Set the offset angle */
-    void SetZeroOffset();
-
-    /* Load offset angle */
-    void LoadZeroOffset();
-
-    /* Turn off both motors */
-    void MotorsOff();
+    /* public boolean to see if flywheel is running */
+    bool IsReady();
 
     /* Get drive speed */
-    units::meters_per_second_t GetDriveSpeed(double topSpeed, double bottomSpeed);
-
-    /* Update motor powers */
-    void SetVoltage(units::voltage::volt_t driveMax);
+    units::meters_per_second_t GetFlywheelSpeed(double FlywheelMasterSpeed, double FlywheelFollowerSpeed);
 
     /* Simulate modules */
     void Simulate();
 
-    /**
-     *  @return Module angle
-     */
-    units::degree_t GetModuleAngle();
-
-    wpi::log::DoubleLogEntry m_topMotorCurrent;
-    wpi::log::DoubleLogEntry m_bottomMotorCurrent;
-    wpi::log::DoubleLogEntry m_topMotorRPM;
-    wpi::log::DoubleLogEntry m_bottomMotorRPM;
+    wpi::log::DoubleLogEntry m_flywheelMasterCurrent;
+    wpi::log::DoubleLogEntry m_flywheelFollowerCurrent;
+    wpi::log::DoubleLogEntry m_flywheelMasterRPM;
+    wpi::log::DoubleLogEntry m_flywheelFollowerRPM;
     wpi::log::DoubleLogEntry m_wheelSpeed;
     wpi::log::DoubleLogEntry m_moduleAngleLog;
     wpi::log::DoubleLogEntry m_expectedSpeed;
-    wpi::log::DoubleLogEntry m_expectedAngle;
+    WPI_TalonFX m_flywheelMaster;
+    WPI_TalonFX m_flywheelFollower;
 
-private:
-    WPI_TalonFX m_topMotor;
-    WPI_TalonFX m_bottomMotor;
+    TalonFXSimCollection &m_flywheelMasterSim;
+    TalonFXSimCollection &m_flywheelFollowerSim;
 
-    TalonFXSimCollection &m_topMotorSim;
-    TalonFXSimCollection &m_bottomMotorSim;
-
-    frc::sim::DCMotorSim m_topMotorSimulator;
-    frc::sim::DCMotorSim m_bottomMotorSimulator;
-
-    frc::DutyCycleEncoder m_encoder;
-
-    frc::sim::DutyCycleEncoderSim m_encoderSim;
+    frc::sim::DCMotorSim m_flywheelMasterSimulator;
+    frc::sim::DCMotorSim m_flywheelFollowerSimulator;
 
     std::string m_name;
     wpi::log::DataLog &m_log;
 
-    frc::SimpleMotorFeedforward<units::meters> m_driveFeedForward{
+    frc::SimpleMotorFeedforward<units::meters> m_FlywheelFeedForward{
         ModuleConstants::ks, ModuleConstants::kv, ModuleConstants::ka};
 
-    frc2::PIDController m_drivePIDController{
-        ModuleConstants::kPModuleDriveController, 0, 0};
+    units::volt_t m_FlywheelMasterVoltage;
+    units::volt_t m_FlywheelFollowerVoltage;
 
-    frc::ProfiledPIDController<units::radians> m_turningPIDController{
-        ModuleConstants::kPModuleTurningController,
-        0.0,
-        0.0,
-        {ModuleConstants::kMaxAngularVelocity,
-         ModuleConstants::kMaxAngularAcceleration}};
-
-    double m_offset;
-
-    units::volt_t m_topVoltage;
-    units::volt_t m_bottomVoltage;
-
-    units::meters_per_second_t m_driveSpeed;
-    units::radian_t m_moduleAngle;
+    units::meters_per_second_t m_FlywheelSpeed;
 };
