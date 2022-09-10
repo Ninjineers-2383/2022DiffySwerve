@@ -23,9 +23,8 @@ using namespace GlobalConstants;
 
 DrivetrainSubsystem::DrivetrainSubsystem(wpi::log::DataLog &log)
     : m_frontLeft{FrontLeftModule::kTopMotorPort, FrontLeftModule::kBottomMotorPort, FrontLeftModule::kEncoderPort, FrontLeftModule::name, kCANivoreBus, log},
-      m_rearLeft{RearLeftModule::kTopMotorPort, RearLeftModule::kBottomMotorPort, RearLeftModule::kEncoderPort, RearLeftModule::name, kCANivoreBus, log},
+      m_rear{RearModule::kTopMotorPort, RearModule::kBottomMotorPort, RearModule::kEncoderPort, RearModule::name, kCANivoreBus, log},
       m_frontRight{FrontRightModule::kTopMotorPort, FrontRightModule::kBottomMotorPort, FrontRightModule::kEncoderPort, FrontRightModule::name, kCANivoreBus, log},
-      m_rearRight{RearRightModule::kTopMotorPort, RearRightModule::kBottomMotorPort, RearRightModule::kEncoderPort, RearRightModule::name, kCANivoreBus, log},
       m_pigeonSim{m_pigeon.GetSimCollection()},
       m_odometry{kDriveKinematics, GetHeading(), frc::Pose2d()},
       m_lastPose{m_odometry.GetPose()},
@@ -46,10 +45,9 @@ void DrivetrainSubsystem::Periodic()
 {
     frc::SwerveModuleState frontLeftState = m_frontLeft.GetState();
     frc::SwerveModuleState frontRightState = m_frontRight.GetState();
-    frc::SwerveModuleState rearLeftState = m_rearLeft.GetState();
-    frc::SwerveModuleState rearRightState = m_rearRight.GetState();
+    frc::SwerveModuleState rearState = m_rear.GetState();
 
-    auto [vx, vy, vr] = kDriveKinematics.ToChassisSpeeds(frontLeftState, frontRightState, rearLeftState, rearRightState);
+    auto [vx, vy, vr] = kDriveKinematics.ToChassisSpeeds(frontLeftState, frontRightState, rearState);
     m_vr = vr;
 
     m_currentYaw = m_pigeon.GetYaw() - m_zero;
@@ -58,8 +56,7 @@ void DrivetrainSubsystem::Periodic()
         GetHeading(),
         frontLeftState,
         frontRightState,
-        rearLeftState,
-        rearRightState);
+        rearState);
 
     frc::SmartDashboard::PutNumber("Gyro", m_currentYaw);
     frc::SmartDashboard::PutBoolean("FieldCentric", m_fieldCentric);
@@ -85,9 +82,8 @@ void DrivetrainSubsystem::Periodic()
 void DrivetrainSubsystem::SimulationPeriodic()
 {
     m_frontLeft.Simulate();
-    m_rearLeft.Simulate();
+    m_rear.Simulate();
     m_frontRight.Simulate();
-    m_rearRight.Simulate();
 
     m_pigeonSim.AddHeading(units::degrees_per_second_t(m_vr).value() * 0.02);
 }
