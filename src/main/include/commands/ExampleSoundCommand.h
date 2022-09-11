@@ -8,8 +8,6 @@
 
 #include <frc2/command/CommandHelper.h>
 
-#include "subsystems/ExampleSubsystem.h"
-
 #include <networktables/NetworkTableInstance.h>
 
 /**
