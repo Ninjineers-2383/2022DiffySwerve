@@ -8,11 +8,8 @@
 
 #include <frc2/command/CommandHelper.h>
 
-<<<<<<< HEAD:src/main/include/commands/ExampleSoundCommand.h
-=======
 #include "examples/ExampleSubsystem.h"
 
->>>>>>> baa43dd5479f7f96cc8b89fc651c364ce1026dba:src/main/include/examples/ExampleSoundCommand.h
 #include <networktables/NetworkTableInstance.h>
 
 /**
