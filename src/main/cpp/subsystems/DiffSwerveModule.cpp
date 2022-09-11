@@ -140,8 +140,6 @@ units::voltage::volt_t DiffSwerveModule::SetDesiredState(const frc::SwerveModule
     const auto state = frc::SwerveModuleState::Optimize(
         desiredState, m_moduleAngle);
 
-    const frc::SwerveModuleState state = desiredState;
-
     const units::velocity::meters_per_second_t m_desiredSpeed = state.speed;
     const units::angle::radian_t m_desiredAngle = state.angle.Radians();
 

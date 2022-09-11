@@ -17,17 +17,16 @@ public:
      */
     RetractableIntake(int motorPort, int solUp, int solDown);
     RetractableIntake(int motorPort, int solUp, int solDown, bool inactiveWhenRetracted);
-    void RetractableIntake::toggleLift(frc::DoubleSolenoid::Value value);
-    frc::DoubleSolenoid::Value RetractableIntake::getState();
-    void RetractableIntake::intake(int power);
+    void toggleLift(frc::DoubleSolenoid::Value value);
+    frc::DoubleSolenoid::Value getState();
+    void intake(int power);
     frc::DoubleSolenoid m_lift;
     WPI_TalonFX m_motor;
-    bool RetractableIntake::inactiveWhenRetracted;
+    bool inactiveWhenRetracted;
     /**
      * Will be called periodically whenever the CommandScheduler runs.
      */
-    void
-    Periodic() override;
+    void Periodic() override;
 
     /**
      * Will be called periodically whenever the CommandScheduler runs during
