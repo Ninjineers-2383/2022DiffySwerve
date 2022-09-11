@@ -1,4 +1,4 @@
-#include "subsystems/DiffSwerveModule.h"
+#include "subsystems/FlywheelSubsystem.h"
 
 #include <frc/smartdashboard/SmartDashboard.h>
 
@@ -137,8 +137,8 @@ units::voltage::volt_t DiffSwerveModule::SetDesiredState(const frc::SwerveModule
 {
 
     // Optimize the reference state to avoid spinning further than 90 degrees
-    const auto state = frc::SwerveModuleState::Optimize(
-        desiredState, m_moduleAngle);
+    // const auto state = frc::SwerveModuleState::Optimize(
+    //     desiredState, m_moduleAngle);
 
     const frc::SwerveModuleState state = desiredState;
 

@@ -92,5 +92,6 @@
     "editor.defaultFormatter": "ms-vscode.cpptools",
     "editor.tabSize": 4,
     "editor.detectIndentation": false,
-  }
+  },
+  "C_Cpp.errorSquiggles": "Enabled"
 }
