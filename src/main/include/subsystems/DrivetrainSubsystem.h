@@ -170,9 +170,6 @@ private:
 
     BasePigeonSimCollection m_pigeonSim;
 
-    // Odometry class for tracking robot pose
-    frc::SwerveDriveOdometry<DriveConstants::kModuleCount> m_odometry;
-
     frc::Field2d m_field;
 
     frc::Pose2d m_lastPose;

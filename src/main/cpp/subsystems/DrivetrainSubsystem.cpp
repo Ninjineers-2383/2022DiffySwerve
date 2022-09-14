@@ -26,19 +26,12 @@ DrivetrainSubsystem::DrivetrainSubsystem(wpi::log::DataLog &log)
       m_rear{RearModule::kTopMotorPort, RearModule::kBottomMotorPort, RearModule::kEncoderPort, RearModule::name, kCANivoreBus, log},
       m_frontRight{FrontRightModule::kTopMotorPort, FrontRightModule::kBottomMotorPort, FrontRightModule::kEncoderPort, FrontRightModule::name, kCANivoreBus, log},
       m_pigeonSim{m_pigeon.GetSimCollection()},
-      m_odometry{kDriveKinematics, GetHeading(), frc::Pose2d()},
-      m_lastPose{m_odometry.GetPose()},
       m_log(log),
       m_fieldCentric{false}
 {
     LoadWheelOffsets();
 
     frc::SmartDashboard::PutData("Field", &m_field);
-
-    if (frc::RobotBase::IsSimulation())
-    {
-        m_odometry.ResetPosition(frc::Pose2d(1_m, 1_m, 0_deg), 0_deg);
-    }
 }
 
 void DrivetrainSubsystem::Periodic()
@@ -52,20 +45,12 @@ void DrivetrainSubsystem::Periodic()
 
     m_currentYaw = m_pigeon.GetYaw() - m_zero;
 
-    m_odometry.Update(
-        GetHeading(),
-        frontLeftState,
-        frontRightState,
-        rearState);
-
     frc::SmartDashboard::PutNumber("Gyro", m_currentYaw);
     frc::SmartDashboard::PutBoolean("FieldCentric", m_fieldCentric);
 
     frc::SmartDashboard::PutNumber("vx", vx.value());
     frc::SmartDashboard::PutNumber("vy", vy.value());
     frc::SmartDashboard::PutNumber("vr", vr.value());
-
-    m_field.SetRobotPose(m_odometry.GetPose());
 
     // Press the USER button the RIO to reset the offset on all swerve modules
     if (frc::RobotController::GetUserButton() == 1 && m_counter == 0)
@@ -153,20 +138,6 @@ void DrivetrainSubsystem::SetOffsetHeading(int heading)
 double DrivetrainSubsystem::GetTurnRate()
 {
     return m_pigeon.GetRate();
-}
-
-frc::Pose2d DrivetrainSubsystem::GetPose()
-{
-    return m_odometry.GetPose();
-}
-
-void DrivetrainSubsystem::ResetOdometry(frc::Pose2d pose)
-{
-
-    m_currentYaw = pose.Rotation().Degrees().value();
-    SetOffsetHeading(m_currentYaw);
-
-    m_odometry.ResetPosition(pose, frc::Rotation2d(GetHeading()));
 }
 
 void DrivetrainSubsystem::MotorsOff()
