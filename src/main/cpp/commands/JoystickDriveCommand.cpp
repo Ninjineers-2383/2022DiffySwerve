@@ -18,7 +18,7 @@ void JoystickDriveCommand::Execute()
 {
     units::velocity::meters_per_second_t xAxis = -ThrottleSoftener(frc::ApplyDeadband(m_xInput(), 0.1)) * DriveConstants::kMaxSpeed;
     units::velocity::meters_per_second_t yAxis = -ThrottleSoftener(frc::ApplyDeadband(m_yInput(), 0.1)) * DriveConstants::kMaxSpeed;
-    units::radians_per_second_squared_t zAxis = -ThrottleSoftener(frc::ApplyDeadband(m_zInput(), 0.1)) * DriveConstants::kMaxAngularSpeed;
+    units::radians_per_second_t zAxis = -ThrottleSoftener(frc::ApplyDeadband(m_zInput(), 0.1)) * DriveConstants::kMaxAngularSpeed;
 
     m_drivetrain->SetFieldCentric(m_fieldCentricToggle());
 
