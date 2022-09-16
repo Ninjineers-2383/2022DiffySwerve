@@ -36,6 +36,8 @@
 
 #include <wpi/DataLog.h>
 
+#include "subsystems/CTREDoubleEncoder.h"
+
 class DiffSwerveModule
 {
     using radians_per_second_squared_t =
@@ -49,14 +51,16 @@ public:
      *
      * @param topMotorChannel can ID of top falcon
      * @param bottomMotorChannel can ID of bottom falcon
-     * @param encoderPort port number of REV Throughbore
+     * @param encoderPortA port number of the A channel of the quadrature encoder
+     * @param encoderPortB port number of the B channel of the quadrature encoder
+     * @param encoderPortAbs port number of the DutyCycle channel of the absolute encoder
      * @param name string for module name
      * @param CANbus string for CANbus
      * @param log wpi datalog
      */
-    DiffSwerveModule(const int topMotorChannel,
-                     const int bottomMotorChannel,
-                     const int encoderPort, std::string name, std::string CANbus, wpi::log::DataLog &log);
+    DiffSwerveModule(const int topMotorChannel, const int bottomMotorChannel,
+                     const int encoderPortA, const int encoderPortB, const int encoderPortAbs,
+                     std::string name, std::string CANbus, wpi::log::DataLog &log);
 
     /**
      * @return state of module
@@ -114,9 +118,7 @@ private:
     frc::sim::DCMotorSim m_topMotorSimulator;
     frc::sim::DCMotorSim m_bottomMotorSimulator;
 
-    frc::DutyCycleEncoder m_encoder;
-
-    frc::sim::DutyCycleEncoderSim m_encoderSim;
+    CTREDoubleEncoder m_encoder;
 
     std::string m_name;
     wpi::log::DataLog &m_log;
@@ -134,7 +136,7 @@ private:
         {ModuleConstants::kMaxAngularVelocity,
          ModuleConstants::kMaxAngularAcceleration}};
 
-    double m_offset;
+    units::degree_t m_offset;
 
     units::volt_t m_topVoltage;
     units::volt_t m_bottomVoltage;

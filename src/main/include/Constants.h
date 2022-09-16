@@ -49,6 +49,10 @@ namespace DriveConstants
         units::voltage::volt_t(10);
     constexpr units::velocity::meters_per_second_t kMaxSpeed =
         units::meters_per_second_t(4);
+    constexpr units::angular_velocity::radians_per_second_t kMaxAngularSpeed =
+        units::radians_per_second_t(2 * wpi::numbers::pi);
+
+    constexpr int kEncoderResolution = 4096;
 
     // TODO: Get real values for these constants
     const units::meter_t kTrackWidth = 0.432_m; // Distance between centers of right and left wheels on robot
@@ -58,7 +62,9 @@ namespace DriveConstants
     {
         constexpr int kTopMotorPort = 20;
         constexpr int kBottomMotorPort = 21;
-        constexpr int kEncoderPort = 1;
+        constexpr int kEncoderPortA = 0;
+        constexpr int kEncoderPortB = 1;
+        constexpr int kEncoderPortAbs = 2;
         const std::string name = "frontLeft";
         const frc::Translation2d translation =
             frc::Translation2d(-kWheelBase / 2, kTrackWidth / 2);
@@ -67,7 +73,9 @@ namespace DriveConstants
     {
         constexpr int kTopMotorPort = 22;
         constexpr int kBottomMotorPort = 23;
-        constexpr int kEncoderPort = 2;
+        constexpr int kEncoderPortA = 3;
+        constexpr int kEncoderPortB = 4;
+        constexpr int kEncoderPortAbs = 5;
         const std::string name = "frontRight";
         const frc::Translation2d translation =
             frc::Translation2d(kWheelBase / 2, kTrackWidth / 2);
@@ -76,7 +84,9 @@ namespace DriveConstants
     {
         constexpr int kTopMotorPort = 24;
         constexpr int kBottomMotorPort = 25;
-        constexpr int kEncoderPort = 3;
+        constexpr int kEncoderPortA = 6;
+        constexpr int kEncoderPortB = 7;
+        constexpr int kEncoderPortAbs = 8;
         const std::string name = "rearLeft";
         const frc::Translation2d translation =
             frc::Translation2d(-kWheelBase / 2, -kTrackWidth / 2);

@@ -154,8 +154,8 @@ public:
     void LoadWheelOffsets();
 
     DiffSwerveModule m_frontLeft;
-    DiffSwerveModule m_rear;
     DiffSwerveModule m_frontRight;
+    DiffSwerveModule m_rear;
 
     DiffSwerveModule *moduleArray[DriveConstants::kModuleCount] = {
         &m_frontLeft,

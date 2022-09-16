@@ -4,15 +4,16 @@
 
 #include <units/voltage.h>
 
-DiffSwerveModule::DiffSwerveModule(int topMotorChannel, int bottomMotorChannel, int encoderPort, std::string name, std::string CANbus, wpi::log::DataLog &log)
+DiffSwerveModule::DiffSwerveModule(int topMotorChannel, int bottomMotorChannel,
+                                   int encoderPortA, int encoderPortB, int encoderPortAbs,
+                                   std::string name, std::string CANbus, wpi::log::DataLog &log)
     : m_topMotor(topMotorChannel, CANbus),
       m_bottomMotor(bottomMotorChannel, CANbus),
       m_topMotorSim{m_topMotor.GetSimCollection()},
       m_bottomMotorSim{m_bottomMotor.GetSimCollection()},
       m_topMotorSimulator{frc::DCMotor::Falcon500(), 1, units::kilogram_square_meter_t{0.0005}},
       m_bottomMotorSimulator{frc::DCMotor::Falcon500(), 1, units::kilogram_square_meter_t{0.0005}},
-      m_encoder(encoderPort),
-      m_encoderSim{m_encoder},
+      m_encoder{encoderPortA, encoderPortB, encoderPortAbs},
       m_name(name),
       m_log(log)
 {
@@ -68,6 +69,9 @@ frc::SwerveModuleState DiffSwerveModule::GetState()
     frc::SmartDashboard::PutNumber("Modules/" + m_name + "/moduleAngle", m_moduleAngle.value());
     frc::SmartDashboard::PutNumber("Modules/" + m_name + "/moduleSpeed", m_driveSpeed.value());
 
+    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Top Temperature", m_topMotor.GetTemperature());
+    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Bottom Temperature", m_bottomMotor.GetTemperature());
+
     // data logging
     m_topMotorCurrent.Append(m_topMotor.GetStatorCurrent());
     m_bottomMotorCurrent.Append(m_bottomMotor.GetStatorCurrent());
@@ -109,8 +113,8 @@ void DiffSwerveModule::Simulate()
     double averagePos = (m_topMotor.GetSelectedSensorPosition() + m_bottomMotor.GetSelectedSensorPosition()) / 2;
     averagePos /= 2048;
     averagePos /= 28;
-    m_encoderSim.Set(units::turn_t{averagePos});
-    m_encoderSim.SetDistance(averagePos);
+
+    m_encoder.Simulate(units::degree_t{averagePos * 360});
 
     frc::SmartDashboard::PutNumber("Simulated/" + m_name + "/Encoder/Rotation", GetModuleAngle().value());
 }
@@ -130,7 +134,7 @@ units::meters_per_second_t DiffSwerveModule::GetDriveSpeed(double topSpeed, doub
 
 units::degree_t DiffSwerveModule::GetModuleAngle()
 {
-    return units::degree_t((m_encoder.Get().value() * 360) - m_offset);
+    return m_encoder.Get() - m_offset;
 }
 
 units::voltage::volt_t DiffSwerveModule::SetDesiredState(const frc::SwerveModuleState &desiredState)
@@ -196,17 +200,15 @@ void DiffSwerveModule::MotorsOff()
 
 void DiffSwerveModule::SetZeroOffset()
 {
-    double steerPosition{
-        GetModuleAngle().value() + m_offset};
-    fmt::print("INFO: {} steerPosition {}\n", m_name, steerPosition);
-    frc::Preferences::SetDouble(m_name, steerPosition);
+    auto steerPosition = GetModuleAngle() + m_offset; // Add offset because it is being subtracted in the function
+    fmt::print("INFO: {} steerPosition {}\n", m_name, steerPosition.value());
+    frc::Preferences::SetDouble(m_name, steerPosition.value());
     m_offset = steerPosition;
 }
 
 void DiffSwerveModule::LoadZeroOffset()
 {
-    double steerPosition{
-        frc::Preferences::GetDouble(m_name)};
-    fmt::print("INFO: {} steerPosition {}\n", m_name, steerPosition);
+    auto steerPosition = units::degree_t{frc::Preferences::GetDouble(m_name)};
+    fmt::print("INFO: {} steerPosition {}\n", m_name, steerPosition.value());
     m_offset = steerPosition;
 }
