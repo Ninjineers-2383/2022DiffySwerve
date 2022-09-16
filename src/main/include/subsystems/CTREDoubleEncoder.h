@@ -15,10 +15,9 @@ public:
 
     void ResetEncoders();
     void SetZeroOffset();
-    void Simulate(double angle);
+    void Simulate(units::degree_t angle);
 
     units::degree_t Get();
-    units::degree_t Get(bool simulation);
 
     int GetRawQuad();
     double GetRawAbs();

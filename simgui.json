@@ -15,11 +15,6 @@
         "header": {
           "open": true
         }
-      },
-      "Talon FX[21]": {
-        "header": {
-          "open": true
-        }
       }
     },
     "RoboRIO": {
@@ -31,10 +26,15 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/DigitalInput[0]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[1]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[3]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[4]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[5]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[6]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[7]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[8]": "Digital Input",
       "/LiveWindow/Ungrouped/Pigeon 2[0]": "Gyro",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/Ungrouped/class frc2::SubsystemBase": "Subsystem",
@@ -50,9 +50,6 @@
   },
   "NetworkTables": {
     "SmartDashboard": {
-      "Field": {
-        "open": true
-      },
       "Modules": {
         "frontLeft": {
           "open": true
@@ -64,7 +61,8 @@
           "open": true
         },
         "open": true
-      }
+      },
+      "open": true
     },
     "SoundCues": {
       "open": true
@@ -79,7 +77,7 @@
               "autoFit": true
             }
           ],
-          "height": 75,
+          "height": 213,
           "name": "Velcoity",
           "series": [
             {
@@ -108,7 +106,7 @@
               "autoFit": true
             }
           ],
-          "height": 75,
+          "height": 213,
           "lockPrevX": true,
           "name": "Angle",
           "series": [

@@ -22,9 +22,15 @@ using namespace DriveConstants;
 using namespace GlobalConstants;
 
 DrivetrainSubsystem::DrivetrainSubsystem(wpi::log::DataLog &log)
-    : m_frontLeft{FrontLeftModule::kTopMotorPort, FrontLeftModule::kBottomMotorPort, FrontLeftModule::kEncoderPort, FrontLeftModule::name, kCANivoreBus, log},
-      m_rear{RearModule::kTopMotorPort, RearModule::kBottomMotorPort, RearModule::kEncoderPort, RearModule::name, kCANivoreBus, log},
-      m_frontRight{FrontRightModule::kTopMotorPort, FrontRightModule::kBottomMotorPort, FrontRightModule::kEncoderPort, FrontRightModule::name, kCANivoreBus, log},
+    : m_frontLeft{FrontLeftModule::kTopMotorPort, FrontLeftModule::kBottomMotorPort,
+                  FrontLeftModule::kEncoderPortA, FrontLeftModule::kEncoderPortB, FrontLeftModule::kEncoderPortAbs,
+                  FrontLeftModule::name, kCANivoreBus, log},
+      m_frontRight{FrontRightModule::kTopMotorPort, FrontRightModule::kBottomMotorPort,
+                   FrontRightModule::kEncoderPortA, FrontRightModule::kEncoderPortB, FrontRightModule::kEncoderPortAbs,
+                   FrontRightModule::name, kCANivoreBus, log},
+      m_rear{RearModule::kTopMotorPort, RearModule::kBottomMotorPort,
+             RearModule::kEncoderPortA, RearModule::kEncoderPortB, RearModule::kEncoderPortAbs,
+             RearModule::name, kCANivoreBus, log},
       m_pigeonSim{m_pigeon.GetSimCollection()},
       m_odometry{kDriveKinematics, GetHeading(), frc::Pose2d()},
       m_lastPose{m_odometry.GetPose()},
