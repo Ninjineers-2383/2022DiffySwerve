@@ -18,7 +18,6 @@ public:
     void Simulate(units::degree_t angle);
 
     units::degree_t Get();
-
     int GetRawQuad();
     double GetRawAbs();
 

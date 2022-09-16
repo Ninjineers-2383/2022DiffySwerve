@@ -23,7 +23,7 @@ void CTREDoubleEncoder::ResetEncoders()
 
 void CTREDoubleEncoder::SetZeroOffset()
 {
-    zeroOffset = (m_absEncoder.GetAbsolutePosition() * DriveConstants::kEncoderResolution) - m_quadratureEncoder.GetDistance();
+    zeroOffset = 360 * (m_absEncoder.GetAbsolutePosition() - m_quadratureEncoder.GetDistance() / DriveConstants::kEncoderResolution);
 }
 
 void CTREDoubleEncoder::Simulate(units::degree_t angle)
@@ -34,7 +34,7 @@ void CTREDoubleEncoder::Simulate(units::degree_t angle)
 
 units::degree_t CTREDoubleEncoder::Get()
 {
-    return units::degree_t((m_quadratureEncoder.GetDistance() - zeroOffset) / DriveConstants::kEncoderResolution * 360);
+    return units::degree_t((m_quadratureEncoder.GetDistance()) / DriveConstants::kEncoderResolution - zeroOffset);
 }
 
 int CTREDoubleEncoder::GetRawQuad()
