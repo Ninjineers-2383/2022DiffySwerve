@@ -50,6 +50,8 @@ namespace DriveConstants
     constexpr units::velocity::meters_per_second_t kMaxSpeed =
         units::meters_per_second_t(4);
 
+    constexpr int kEncoderResolution = 4096;
+
     // TODO: Get real values for these constants
     const units::meter_t kTrackWidth = 0.432_m; // Distance between centers of right and left wheels on robot
     const units::meter_t kWheelBase = 0.686_m;  // Distance between centers of front and back wheels on robot
