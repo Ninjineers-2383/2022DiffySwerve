@@ -49,6 +49,8 @@ namespace DriveConstants
         units::voltage::volt_t(10);
     constexpr units::velocity::meters_per_second_t kMaxSpeed =
         units::meters_per_second_t(4);
+    constexpr units::angular_velocity::radians_per_second_t kMaxAngularSpeed =
+        units::radians_per_second_t(2 * wpi::numbers::pi);
 
     constexpr int kEncoderResolution = 4096;
 

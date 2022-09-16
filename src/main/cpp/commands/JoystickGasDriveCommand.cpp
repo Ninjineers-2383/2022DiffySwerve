@@ -17,10 +17,13 @@ JoystickGasDriveCommand::JoystickGasDriveCommand(DrivetrainSubsystem *drivetrain
 
 void JoystickGasDriveCommand::Execute()
 {
-    double angle = atan2(ThrottleSoftener(frc::ApplyDeadband(m_yInput(), 0.1)), ThrottleSoftener(frc::ApplyDeadband(m_xInput(), 0.1)));
+    units::radian_t angle = units::radian_t{
+        atan2(
+            ThrottleSoftener(frc::ApplyDeadband(m_yInput(), 0.1)),
+            ThrottleSoftener(frc::ApplyDeadband(m_xInput(), 0.1)))};
 
-    units::velocity::meters_per_second_t xAxis = -m_wInput() * cos(angle) * DriveConstants::kMaxSpeed;
-    units::velocity::meters_per_second_t yAxis = -m_wInput() * sin(angle) * DriveConstants::kMaxSpeed;
+    units::velocity::meters_per_second_t xAxis = -m_wInput() * cos(angle.value()) * DriveConstants::kMaxSpeed;
+    units::velocity::meters_per_second_t yAxis = -m_wInput() * sin(angle.value()) * DriveConstants::kMaxSpeed;
     units::velocity::meters_per_second_t zAxis = -ThrottleSoftener(frc::ApplyDeadband(m_zInput(), 0.1)) * DriveConstants::kMaxSpeed;
 
     m_drivetrain->SetFieldCentric(m_fieldCentricToggle());
