@@ -69,6 +69,9 @@ frc::SwerveModuleState DiffSwerveModule::GetState()
     frc::SmartDashboard::PutNumber("Modules/" + m_name + "/moduleAngle", m_moduleAngle.value());
     frc::SmartDashboard::PutNumber("Modules/" + m_name + "/moduleSpeed", m_driveSpeed.value());
 
+    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Top Temperature", m_topMotor.GetTemperature());
+    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Bottom Temperature", m_bottomMotor.GetTemperature());
+
     // data logging
     m_topMotorCurrent.Append(m_topMotor.GetStatorCurrent());
     m_bottomMotorCurrent.Append(m_bottomMotor.GetStatorCurrent());
