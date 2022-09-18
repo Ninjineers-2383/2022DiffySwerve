@@ -38,6 +38,10 @@ DrivetrainSubsystem::DrivetrainSubsystem(wpi::log::DataLog &log)
     LoadWheelOffsets();
 
     frc::SmartDashboard::PutData("Field", &m_field);
+
+    AddChild(FrontLeftModule::name, &m_frontLeft);
+    AddChild(FrontRightModule::name, &m_frontRight);
+    AddChild(RearModule::name, &m_rear);
 }
 
 void DrivetrainSubsystem::Periodic()

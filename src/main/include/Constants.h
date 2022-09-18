@@ -85,7 +85,7 @@ namespace DriveConstants
         constexpr int kEncoderPortA = 6;
         constexpr int kEncoderPortB = 7;
         constexpr int kEncoderPortAbs = 8;
-        const std::string name = "rearLeft";
+        const std::string name = "rear";
         const frc::Translation2d translation =
             frc::Translation2d(-kWheelBase / 2, -kTrackWidth / 2);
     }
