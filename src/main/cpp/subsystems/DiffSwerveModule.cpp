@@ -40,8 +40,8 @@ DiffSwerveModule::DiffSwerveModule(int topMotorChannel, int bottomMotorChannel,
             -wpi::numbers::pi},
         units::radian_t(wpi::numbers::pi));
 
-    m_topMotor.SetNeutralMode(NeutralMode::Coast);
-    m_bottomMotor.SetNeutralMode(NeutralMode::Coast);
+    m_topMotor.SetNeutralMode(NeutralMode::Brake);
+    m_bottomMotor.SetNeutralMode(NeutralMode::Brake);
 
     m_topMotorCurrent = wpi::log::DoubleLogEntry(log, "/" + m_name + "/topMotorCurrent");
     m_bottomMotorCurrent = wpi::log::DoubleLogEntry(log, "/" + m_name + "/bottomMotorCurrent");
@@ -65,9 +65,6 @@ frc::SwerveModuleState DiffSwerveModule::GetState()
 
     m_driveSpeed = GetDriveSpeed(topMotorSpeed, bottomMotorSpeed);
     m_moduleAngle = GetModuleAngle();
-
-    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/moduleAngle", m_moduleAngle.value());
-    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/moduleSpeed", m_driveSpeed.value());
 
     frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Top Temperature", m_topMotor.GetTemperature());
     frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Bottom Temperature", m_bottomMotor.GetTemperature());
@@ -161,8 +158,10 @@ units::voltage::volt_t DiffSwerveModule::SetDesiredState(const frc::SwerveModule
     // Calculate the turning motor output from the turning PID controller.
     double turnOutput = m_turningPIDController.Calculate(m_moduleAngle, m_desiredAngle);
 
-    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Module Angle", m_moduleAngle.value());
-    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Desired Angle", m_desiredAngle.value());
+    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Module Angle (Radians)", m_moduleAngle.value());
+    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Module Angle (Degrees)", units::degree_t{m_moduleAngle}.value());
+    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Desired Angle (Radians)", m_desiredAngle.value());
+    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Desired Angle (Degrees)", units::degree_t{m_desiredAngle}.value());
     frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Turn Output", turnOutput);
 
     // Dont turn at more than 50% power
@@ -181,7 +180,6 @@ units::voltage::volt_t DiffSwerveModule::SetDesiredState(const frc::SwerveModule
 
 void DiffSwerveModule::SetVoltage(units::voltage::volt_t driveMax)
 {
-    // TODO: replace .Set with .SetVoltage
     m_topMotor.Set(ControlMode::PercentOutput, (m_topVoltage * driveMax / DriveConstants::kDriveMaxVoltage).value());
     m_bottomMotor.Set(ControlMode::PercentOutput, (m_bottomVoltage * driveMax / DriveConstants::kDriveMaxVoltage).value());
 }
@@ -190,6 +188,7 @@ void DiffSwerveModule::ResetEncoders()
 {
     m_topMotor.SetSelectedSensorPosition(0);
     m_bottomMotor.SetSelectedSensorPosition(0);
+    m_encoder.ResetEncoders();
 }
 
 void DiffSwerveModule::MotorsOff()
