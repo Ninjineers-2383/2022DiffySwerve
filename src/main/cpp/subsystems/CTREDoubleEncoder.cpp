@@ -8,6 +8,8 @@ CTREDoubleEncoder::CTREDoubleEncoder(int portA, int portB, int portAbs)
       m_absEncoder(portAbs),
       m_absEncoderSim(m_absEncoder)
 {
+    m_quadratureEncoder.SetDistancePerPulse(360.0 / 1024.0); // 360 degrees per revolution, 1024 ticks per revolution
+    m_absEncoder.SetDistancePerRotation(360);                // 360 degrees per revolution
     ResetEncoders();
 }
 
@@ -21,23 +23,20 @@ void CTREDoubleEncoder::ResetEncoders()
 void CTREDoubleEncoder::SetZeroOffset()
 {
     m_zeroOffset =
-        (Get().value() + m_zeroOffset)                // Get degrees output from relativeEncoder
-        - (m_absEncoder.GetAbsolutePosition() * 360); // Get degrees output from absoluteEncoder
+        (Get().value() + m_zeroOffset) // Get degrees output from relativeEncoder
+        - m_absEncoder.GetDistance();  // Get degrees output from absoluteEncoder
 }
 
 void CTREDoubleEncoder::Simulate(units::degree_t angle)
 {
     m_absEncoderSim.Set(angle);
-    m_quadratureEncoderSim.SetCount(angle.value() / 360 * kEncoderResolution);
+    m_quadratureEncoderSim.SetDistance(angle.value());
 }
 
 units::degree_t CTREDoubleEncoder::Get()
 {
     return units::degree_t{
-        ((m_quadratureEncoder.GetRaw() / kEncoderResolution) // Scale to turns
-         * 360)                                              // scale to degrees
-        - m_zeroOffset                                       // offset to absolute zero
-    };
+        m_quadratureEncoder.GetDistance() - m_zeroOffset};
 }
 
 int CTREDoubleEncoder::GetRawQuad()
