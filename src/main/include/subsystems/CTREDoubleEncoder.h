@@ -11,6 +11,8 @@
 class CTREDoubleEncoder
 {
 public:
+    static constexpr int kEncoderResolution = 4096; // 4096 ticks per revolution in 4x mode
+
     /**
      * Differential Swerve Module
      *
@@ -35,17 +37,17 @@ public:
     units::degree_t Get();
 
     /**
-     * @return raw quadrature encoder ticks
+     * @return raw quadrature encoder ticks [0, kEncoderResolution]
      */
     int GetRawQuad();
 
     /**
-     * @return raw absolute encoder reading
+     * @return raw absolute encoder reading [0, 1]
      */
     double GetRawAbs();
 
 private:
-    double zeroOffset = 0;
+    double m_zeroOffset = 0;
     frc::Encoder m_quadratureEncoder;
     frc::sim::EncoderSim m_quadratureEncoderSim;
     frc::DutyCycleEncoder m_absEncoder;

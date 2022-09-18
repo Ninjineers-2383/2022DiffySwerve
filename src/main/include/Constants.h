@@ -52,8 +52,6 @@ namespace DriveConstants
     constexpr units::angular_velocity::radians_per_second_t kMaxAngularSpeed =
         units::radians_per_second_t(2 * wpi::numbers::pi);
 
-    constexpr int kEncoderResolution = 4096;
-
     // TODO: Get real values for these constants
     const units::meter_t kTrackWidth = 0.432_m; // Distance between centers of right and left wheels on robot
     const units::meter_t kWheelBase = 0.686_m;  // Distance between centers of front and back wheels on robot
@@ -100,7 +98,7 @@ namespace DriveConstants
 
 namespace ModuleConstants
 {
-    constexpr units::ampere_t kMaxCurrent = 80.0_A;
+    constexpr units::ampere_t kMaxCurrent = 40.0_A;
 
     constexpr double kPModuleTurningController = 1 / wpi::numbers::pi;
     constexpr double kPModuleDriveController = 0.5; // 0.025;
