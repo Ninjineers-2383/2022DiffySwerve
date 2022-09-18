@@ -3,43 +3,45 @@
 #include <Constants.h>
 
 CTREDoubleEncoder::CTREDoubleEncoder(int portA, int portB, int portAbs)
-    : m_quadratureEncoder(portA, portB, false, frc::CounterBase::EncodingType::k4X),
+    : m_quadratureEncoder(portA, portB, false, frc::CounterBase::EncodingType::k4X), // 4096 ticks per revolution in 4x mode
       m_quadratureEncoderSim(m_quadratureEncoder),
       m_absEncoder(portAbs),
       m_absEncoderSim(m_absEncoder)
 {
-    m_absEncoder.SetPositionOffset(0);
-    m_quadratureEncoder.Reset();
-    m_quadratureEncoder.SetDistancePerPulse(1);
+    m_quadratureEncoder.SetDistancePerPulse(360.0 / 1024.0); // 360 degrees per revolution, 1024 ticks per revolution
+    m_absEncoder.SetDistancePerRotation(360);                // 360 degrees per revolution
     ResetEncoders();
 }
 
 void CTREDoubleEncoder::ResetEncoders()
 {
+    m_absEncoder.SetPositionOffset(0);
     m_quadratureEncoder.Reset();
-    m_quadratureEncoderSim.SetDistance(0);
     SetZeroOffset();
 }
 
 void CTREDoubleEncoder::SetZeroOffset()
 {
-    zeroOffset = 360 * (m_absEncoder.GetAbsolutePosition() - m_quadratureEncoder.GetDistance() / DriveConstants::kEncoderResolution);
+    m_zeroOffset =
+        (Get().value() + m_zeroOffset) // Get degrees output from relativeEncoder
+        - m_absEncoder.GetDistance();  // Get degrees output from absoluteEncoder
 }
 
 void CTREDoubleEncoder::Simulate(units::degree_t angle)
 {
     m_absEncoderSim.Set(angle);
-    m_quadratureEncoderSim.SetDistance(angle.value() / 360 * DriveConstants::kEncoderResolution);
+    m_quadratureEncoderSim.SetDistance(angle.value());
 }
 
 units::degree_t CTREDoubleEncoder::Get()
 {
-    return units::degree_t((m_quadratureEncoder.GetDistance()) / DriveConstants::kEncoderResolution - zeroOffset);
+    return units::degree_t{
+        m_quadratureEncoder.GetDistance() - m_zeroOffset};
 }
 
 int CTREDoubleEncoder::GetRawQuad()
 {
-    return m_quadratureEncoder.GetDistance();
+    return m_quadratureEncoder.GetRaw();
 }
 
 double CTREDoubleEncoder::GetRawAbs()

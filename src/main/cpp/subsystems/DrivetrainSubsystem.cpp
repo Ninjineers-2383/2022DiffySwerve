@@ -42,11 +42,15 @@ DrivetrainSubsystem::DrivetrainSubsystem(wpi::log::DataLog &log)
 
 void DrivetrainSubsystem::Periodic()
 {
-    frc::SwerveModuleState frontLeftState = m_frontLeft.GetState();
-    frc::SwerveModuleState frontRightState = m_frontRight.GetState();
-    frc::SwerveModuleState rearState = m_rear.GetState();
+    frc::SwerveModuleState moduleStates[kModuleCount];
+    char moduleIndex = 0;
 
-    auto [vx, vy, vr] = kDriveKinematics.ToChassisSpeeds(frontLeftState, frontRightState, rearState);
+    for (auto *module : moduleArray)
+    {
+        moduleStates[moduleIndex++] = module->GetState();
+    }
+
+    auto [vx, vy, vr] = kDriveKinematics.ToChassisSpeeds(moduleStates[0], moduleStates[1], moduleStates[2]);
     m_vr = vr;
 
     m_currentYaw = m_pigeon.GetYaw() - m_zero;
