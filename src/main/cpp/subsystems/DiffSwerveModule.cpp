@@ -141,39 +141,29 @@ units::voltage::volt_t DiffSwerveModule::SetDesiredState(const frc::SwerveModule
     const auto state = frc::SwerveModuleState::Optimize(
         desiredState, m_moduleAngle);
 
-    const units::velocity::meters_per_second_t m_desiredSpeed = state.speed;
-    const units::angle::radian_t m_desiredAngle = state.angle.Radians();
+    m_desiredSpeed = state.speed;
+    m_desiredAngle = state.angle.Radians();
 
     m_expectedSpeed.Append(m_desiredSpeed.value());
     m_expectedAngle.Append(state.angle.Radians().value());
 
     // Calculate the drive output from the drive PID controller.
-    const units::volt_t driveOutput = units::volt_t{
+    m_driveOutput = units::volt_t{
         m_drivePIDController.Calculate(m_driveSpeed.value(), m_desiredSpeed.value())};
 
-    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Drive Speed", m_driveSpeed.value());
-    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Desired Speed", m_desiredSpeed.value());
-    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Drive Output", driveOutput.value());
-
     // Calculate the turning motor output from the turning PID controller.
-    double turnOutput = m_turningPIDController.Calculate(m_moduleAngle, m_desiredAngle);
-
-    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Module Angle (Radians)", m_moduleAngle.value());
-    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Module Angle (Degrees)", units::degree_t{m_moduleAngle}.value());
-    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Desired Angle (Radians)", m_desiredAngle.value());
-    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Desired Angle (Degrees)", units::degree_t{m_desiredAngle}.value());
-    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Turn Output", turnOutput);
+    m_turnOutput = m_turningPIDController.Calculate(m_moduleAngle, m_desiredAngle);
 
     // Dont turn at more than 50% power
-    turnOutput = std::clamp(turnOutput, -ModuleConstants::kMaxTurnOutput, ModuleConstants::kMaxTurnOutput);
+    m_turnOutput = std::clamp(m_turnOutput, -ModuleConstants::kMaxTurnOutput, ModuleConstants::kMaxTurnOutput);
 
     const units::voltage::volt_t driveFeedForward{
         m_driveFeedForward.Calculate(m_desiredSpeed)};
 
     m_topVoltage =
-        driveOutput + driveFeedForward + DriveConstants::kDriveMaxVoltage * turnOutput;
+        m_driveOutput + driveFeedForward + DriveConstants::kDriveMaxVoltage * m_turnOutput;
 
-    m_bottomVoltage = -driveOutput - driveFeedForward + DriveConstants::kDriveMaxVoltage * turnOutput;
+    m_bottomVoltage = -m_driveOutput - driveFeedForward + DriveConstants::kDriveMaxVoltage * m_turnOutput;
 
     return std::max(m_topVoltage, m_bottomVoltage);
 }
@@ -210,4 +200,46 @@ void DiffSwerveModule::LoadZeroOffset()
     auto steerPosition = units::degree_t{frc::Preferences::GetDouble(m_name)};
     fmt::print("INFO: {} steerPosition {}\n", m_name, steerPosition.value());
     m_offset = steerPosition;
+}
+
+void DiffSwerveModule::InitSendable(wpi::SendableBuilder &builder)
+{
+    builder.SetSmartDashboardType("Swerve Module");
+    builder.AddDoubleProperty(
+        "Desired Speed", [this]
+        { return m_desiredSpeed.value(); },
+        nullptr);
+    builder.AddDoubleProperty(
+        "Drive Speed", [this]
+        { return m_driveSpeed.value(); },
+        nullptr);
+
+    builder.AddDoubleProperty(
+        "Desired Angle (Degrees)", [this]
+        { return units::degree_t{m_desiredAngle}.value(); },
+        nullptr);
+    builder.AddDoubleProperty(
+        "Desired Angle (Radians)", [this]
+        { return m_desiredAngle.value(); },
+        nullptr);
+    builder.AddDoubleProperty(
+        "Module Angle (Degrees)", [this]
+        { return units::degree_t{m_moduleAngle}.value(); },
+        nullptr);
+    builder.AddDoubleProperty(
+        "Module Angle (Radians)", [this]
+        { return m_moduleAngle.value(); },
+        nullptr);
+
+    builder.AddDoubleProperty(
+        "Drive Output", [this]
+        { return m_driveOutput.value(); },
+        nullptr);
+    builder.AddDoubleProperty(
+        "Turn Output", [this]
+        { return m_turnOutput; },
+        nullptr);
+
+    wpi::SendableRegistry::AddLW(&m_drivePIDController, m_name + "/Drive PID");
+    wpi::SendableRegistry::AddLW(&m_turningPIDController, m_name + "/Turn PID");
 }

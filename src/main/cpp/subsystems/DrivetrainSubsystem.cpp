@@ -41,6 +41,10 @@ DrivetrainSubsystem::DrivetrainSubsystem(wpi::log::DataLog &log)
 
     frc::SmartDashboard::PutData("Field", &m_field);
 
+    AddChild(FrontLeftModule::name, &m_frontLeft);
+    AddChild(FrontRightModule::name, &m_frontRight);
+    AddChild(RearModule::name, &m_rear);
+
     if (frc::RobotBase::IsSimulation())
     {
         m_odometry.ResetPosition(frc::Pose2d(1_m, 1_m, 0_deg), 0_deg);

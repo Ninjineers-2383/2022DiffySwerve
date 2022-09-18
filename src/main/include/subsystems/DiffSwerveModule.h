@@ -38,7 +38,7 @@
 
 #include "subsystems/CTREDoubleEncoder.h"
 
-class DiffSwerveModule
+class DiffSwerveModule : public wpi::Sendable
 {
     using radians_per_second_squared_t =
         units::compound_unit<
@@ -109,6 +109,8 @@ public:
     wpi::log::DoubleLogEntry m_expectedAngle;
 
 private:
+    void InitSendable(wpi::SendableBuilder &builder) override;
+
     WPI_TalonFX m_topMotor;
     WPI_TalonFX m_bottomMotor;
 
@@ -143,4 +145,10 @@ private:
 
     units::meters_per_second_t m_driveSpeed;
     units::radian_t m_moduleAngle;
+
+    units::meters_per_second_t m_desiredSpeed;
+    units::radian_t m_desiredAngle;
+
+    units::volt_t m_driveOutput;
+    double m_turnOutput;
 };
