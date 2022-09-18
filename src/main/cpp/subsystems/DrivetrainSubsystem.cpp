@@ -49,24 +49,20 @@ DrivetrainSubsystem::DrivetrainSubsystem(wpi::log::DataLog &log)
 
 void DrivetrainSubsystem::Periodic()
 {
-    frc::SwerveModuleState moduleStates[kModuleCount];
-    char moduleIndex = 0;
+    frc::SwerveModuleState frontLeftState = m_frontLeft.GetState();
+    frc::SwerveModuleState frontRightState = m_frontRight.GetState();
+    frc::SwerveModuleState rearState = m_rear.GetState();
 
-    for (auto *module : moduleArray)
-    {
-        moduleStates[moduleIndex++] = module->GetState();
-    }
-
-    auto [vx, vy, vr] = kDriveKinematics.ToChassisSpeeds(moduleStates[0], moduleStates[1], moduleStates[2]);
+    auto [vx, vy, vr] = kDriveKinematics.ToChassisSpeeds(frontLeftState, frontRightState, rearState);
     m_vr = vr;
 
     m_currentYaw = m_pigeon.GetYaw() - m_zero;
 
     m_odometry.Update(
         GetHeading(),
-        moduleStates[0],
-        moduleStates[1],
-        moduleStates[2]);
+        frontLeftState,
+        frontRightState,
+        rearState);
 
     frc::SmartDashboard::PutNumber("Gyro", m_currentYaw);
     frc::SmartDashboard::PutBoolean("FieldCentric", m_fieldCentric);
