@@ -66,9 +66,6 @@ frc::SwerveModuleState DiffSwerveModule::GetState()
     m_driveSpeed = GetDriveSpeed(topMotorSpeed, bottomMotorSpeed);
     m_moduleAngle = GetModuleAngle();
 
-    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Top Temperature", m_topMotor.GetTemperature());
-    frc::SmartDashboard::PutNumber("Modules/" + m_name + "/Bottom Temperature", m_bottomMotor.GetTemperature());
-
     // data logging
     m_topMotorCurrent.Append(m_topMotor.GetStatorCurrent());
     m_bottomMotorCurrent.Append(m_bottomMotor.GetStatorCurrent());
@@ -190,7 +187,7 @@ void DiffSwerveModule::MotorsOff()
 void DiffSwerveModule::SetZeroOffset()
 {
     auto steerPosition = GetModuleAngle() + m_offset; // Add offset because it is being subtracted in the function
-    fmt::print("INFO: {} steerPosition {}\n", m_name, steerPosition.value());
+    frc::DataLogManager::Log(fmt::format("INFO: {} steerPosition {}\n", m_name, steerPosition.value()));
     frc::Preferences::SetDouble(m_name, steerPosition.value());
     m_offset = steerPosition;
 }
@@ -198,7 +195,7 @@ void DiffSwerveModule::SetZeroOffset()
 void DiffSwerveModule::LoadZeroOffset()
 {
     auto steerPosition = units::degree_t{frc::Preferences::GetDouble(m_name)};
-    fmt::print("INFO: {} steerPosition {}\n", m_name, steerPosition.value());
+    frc::DataLogManager::Log(fmt::format("INFO: {} steerPosition {}\n", m_name, steerPosition.value()));
     m_offset = steerPosition;
 }
 
@@ -238,6 +235,15 @@ void DiffSwerveModule::InitSendable(wpi::SendableBuilder &builder)
     builder.AddDoubleProperty(
         "Turn Output", [this]
         { return m_turnOutput; },
+        nullptr);
+
+    builder.AddDoubleProperty(
+        "Top Temperature", [this]
+        { return m_topMotor.GetTemperature(); },
+        nullptr);
+    builder.AddDoubleProperty(
+        "Bottom Temperature", [this]
+        { return m_bottomMotor.GetTemperature(); },
         nullptr);
 
     wpi::SendableRegistry::AddLW(&m_drivePIDController, m_name + "/Drive PID");

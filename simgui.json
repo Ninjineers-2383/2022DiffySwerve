@@ -81,7 +81,7 @@
               "autoFit": true
             }
           ],
-          "height": 213,
+          "height": 224,
           "name": "Velcoity"
         },
         {
@@ -90,7 +90,7 @@
               "autoFit": true
             }
           ],
-          "height": 213,
+          "height": 224,
           "lockPrevX": true,
           "name": "Angle",
           "series": [

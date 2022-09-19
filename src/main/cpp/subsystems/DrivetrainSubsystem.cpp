@@ -86,7 +86,7 @@ void DrivetrainSubsystem::Periodic()
     {
         SetWheelOffsets();
         m_counter = 100;
-        fmt::print("INFO: User Button Pressed\nSetting all module rotation offsets\n");
+        frc::DataLogManager::Log("INFO: User Button Pressed\nSetting all module rotation offsets\n");
     }
 
     if (m_counter > 0)
@@ -222,7 +222,7 @@ void DrivetrainSubsystem::SetWheelOffsets()
 {
     for (DiffSwerveModule *module : moduleArray)
         module->SetZeroOffset();
-    fmt::print("INFO: SetWheelOffsets Complete\n");
+    frc::DataLogManager::Log("INFO: SetWheelOffsets Complete\n");
 }
 
 void DrivetrainSubsystem::LoadWheelOffsets()
@@ -230,5 +230,5 @@ void DrivetrainSubsystem::LoadWheelOffsets()
     for (DiffSwerveModule *module : moduleArray)
         module->LoadZeroOffset();
 
-    fmt::print("INFO: LoadWheelOffsets Complete\n");
+    frc::DataLogManager::Log("INFO: LoadWheelOffsets Complete\n");
 }
