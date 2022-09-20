@@ -17,7 +17,6 @@ void CTREDoubleEncoder::ResetEncoders()
 {
     m_absEncoder.SetPositionOffset(0);
     m_quadratureEncoder.Reset();
-    SetZeroOffset();
 }
 
 void CTREDoubleEncoder::SetZeroOffset()
