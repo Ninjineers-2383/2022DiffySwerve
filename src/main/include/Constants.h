@@ -37,7 +37,7 @@
 
 namespace GlobalConstants
 {
-    static const std::string kCANivoreBus = "Canivore";
+    static const std::string kCANivoreBus = "rio";
     static const std::string kRIOBus = "rio";
 }
 
@@ -48,7 +48,7 @@ namespace DriveConstants
     constexpr units::voltage::volt_t kDriveMaxVoltage =
         units::voltage::volt_t(10);
     constexpr units::velocity::meters_per_second_t kMaxSpeed =
-        units::meters_per_second_t(4);
+        units::meters_per_second_t(12);
     constexpr units::angular_velocity::radians_per_second_t kMaxAngularSpeed =
         units::radians_per_second_t(2 * wpi::numbers::pi);
 
@@ -100,8 +100,8 @@ namespace ModuleConstants
 {
     constexpr units::ampere_t kMaxCurrent = 40.0_A;
 
-    constexpr double kPModuleTurningController = 1 / wpi::numbers::pi;
-    constexpr double kPModuleDriveController = 0.5; // 0.025;
+    constexpr double kPModuleTurningController = 3.5 / wpi::numbers::pi;
+    constexpr double kPModuleDriveController = 0.025; // 0.025;
     constexpr double kMaxTurnOutput = 0.5;
 
     // Marswars settings
@@ -109,14 +109,14 @@ namespace ModuleConstants
     // constexpr auto kv = 2.2489 * 1_V * 1_s / 1_m;
     // constexpr auto ka = .26974 * 1_V * 1_s * 1_s / 1_m;
 
-    constexpr units::voltage::volt_t ks = 0.2_V;
-    constexpr auto kv = 0.012 * 1_V * 1_s / 1_m;
-    constexpr auto ka = .1 * 1_V * 1_s * 1_s / 1_m;
+    constexpr units::voltage::volt_t ks = 0.57219_V;
+    constexpr auto kv = 2.184 * 1_V * 1_s / 1_m;
+    constexpr auto ka = 0.067772 * 1_V * 1_s * 1_s / 1_m;
 
     constexpr double kDriveGearRatio = 6.4;
     constexpr double kTurnGearRatio = 28;
 
-    constexpr double kDriveWheelDiameterInches = 1.1;
+    constexpr units::meter_t kDriveWheelDiameter = 4_in;
 
     constexpr units::radians_per_second_t kMaxAngularVelocity =
         units::radians_per_second_t(wpi::numbers::pi * 100.0); // radians per second

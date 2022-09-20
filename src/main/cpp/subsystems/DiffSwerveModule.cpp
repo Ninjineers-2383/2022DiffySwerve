@@ -40,8 +40,8 @@ DiffSwerveModule::DiffSwerveModule(int topMotorChannel, int bottomMotorChannel,
             -wpi::numbers::pi},
         units::radian_t(wpi::numbers::pi));
 
-    m_topMotor.SetNeutralMode(NeutralMode::Brake);
-    m_bottomMotor.SetNeutralMode(NeutralMode::Brake);
+    m_topMotor.SetNeutralMode(NeutralMode::Coast);
+    m_bottomMotor.SetNeutralMode(NeutralMode::Coast);
 
     m_topMotorCurrent = wpi::log::DoubleLogEntry(log, "/" + m_name + "/topMotorCurrent");
     m_bottomMotorCurrent = wpi::log::DoubleLogEntry(log, "/" + m_name + "/bottomMotorCurrent");
@@ -119,7 +119,7 @@ units::meters_per_second_t DiffSwerveModule::GetDriveSpeed(double topSpeed, doub
         ((topSpeed - bottomSpeed) / 2) /*Average Sensor Velocity (raw/100ms)*/ *
         (10.0 / 2048) /*Motor Revolutions per second*/ *
         ModuleConstants::kDriveGearRatio /*Output revolutions per second*/ *
-        ((ModuleConstants::kDriveWheelDiameterInches / 39.37) * wpi::numbers::pi) /*Circumference in meters (meters/second)*/;
+        (ModuleConstants::kDriveWheelDiameter.value() * wpi::numbers::pi) /*Circumference in meters (meters/second)*/;
 
     frc::SmartDashboard::PutNumber(m_name + " Wheel Speed ", speed);
 
