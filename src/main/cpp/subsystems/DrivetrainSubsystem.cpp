@@ -25,12 +25,6 @@ DrivetrainSubsystem::DrivetrainSubsystem(wpi::log::DataLog &log)
     : m_frontLeft{FrontLeftModule::kTopMotorPort, FrontLeftModule::kBottomMotorPort,
                   FrontLeftModule::kEncoderPortA, FrontLeftModule::kEncoderPortB, FrontLeftModule::kEncoderPortAbs,
                   FrontLeftModule::name, kCANivoreBus, log},
-      m_frontRight{FrontRightModule::kTopMotorPort, FrontRightModule::kBottomMotorPort,
-                   FrontRightModule::kEncoderPortA, FrontRightModule::kEncoderPortB, FrontRightModule::kEncoderPortAbs,
-                   FrontRightModule::name, kCANivoreBus, log},
-      m_rear{RearModule::kTopMotorPort, RearModule::kBottomMotorPort,
-             RearModule::kEncoderPortA, RearModule::kEncoderPortB, RearModule::kEncoderPortAbs,
-             RearModule::name, kCANivoreBus, log},
       m_pigeonSim{m_pigeon.GetSimCollection()},
       m_log(log),
       m_fieldCentric{false}
@@ -40,8 +34,6 @@ DrivetrainSubsystem::DrivetrainSubsystem(wpi::log::DataLog &log)
     frc::SmartDashboard::PutData("Field", &m_field);
 
     AddChild(FrontLeftModule::name, &m_frontLeft);
-    AddChild(FrontRightModule::name, &m_frontRight);
-    AddChild(RearModule::name, &m_rear);
 }
 
 void DrivetrainSubsystem::Periodic()
@@ -49,10 +41,7 @@ void DrivetrainSubsystem::Periodic()
     frc::SwerveModuleState moduleStates[kModuleCount];
     char moduleIndex = 0;
 
-    for (auto *module : moduleArray)
-    {
-        moduleStates[moduleIndex++] = module->GetState();
-    }
+    moduleStates[0] = m_frontLeft.GetState();
 
     auto [vx, vy, vr] = kDriveKinematics.ToChassisSpeeds(moduleStates[0], moduleStates[1], moduleStates[2]);
     m_vr = vr;
@@ -81,8 +70,6 @@ void DrivetrainSubsystem::Periodic()
 void DrivetrainSubsystem::SimulationPeriodic()
 {
     m_frontLeft.Simulate();
-    m_rear.Simulate();
-    m_frontRight.Simulate();
 
     m_pigeonSim.AddHeading(units::degrees_per_second_t(m_vr).value() * 0.02);
 }
@@ -100,6 +87,10 @@ void DrivetrainSubsystem::Drive(
                              ySpeed,
                              rot});
 
+    states[0] = frc::SwerveModuleState{xSpeed, frc::Rotation2d(units::radian_t{rot.value()})};
+    states[1] = frc::SwerveModuleState{xSpeed, frc::Rotation2d(units::radian_t{rot.value()})};
+    states[2] = frc::SwerveModuleState{xSpeed, frc::Rotation2d(units::radian_t{rot.value()})};
+
     SetModuleStates(states);
 }
 
@@ -109,14 +100,7 @@ void DrivetrainSubsystem::SetModuleStates(wpi::array<frc::SwerveModuleState, kMo
 
     units::voltage::volt_t driveMax = units::voltage::volt_t(0);
 
-    for (int i = 0; i < kModuleCount; i++)
-    {
-        const units::voltage::volt_t max = moduleArray[i]->SetDesiredState(desiredStates[i]);
-        if (max > driveMax)
-        {
-            driveMax = max;
-        }
-    }
+    driveMax = m_frontLeft.SetDesiredState(desiredStates[0]);
 
     if (driveMax > kDriveMaxVoltage)
         driveMax = units::volt_t{
@@ -124,14 +108,12 @@ void DrivetrainSubsystem::SetModuleStates(wpi::array<frc::SwerveModuleState, kMo
     else
         driveMax = units::voltage::volt_t(1);
 
-    for (DiffSwerveModule *module : moduleArray)
-        module->SetVoltage(driveMax);
+    m_frontLeft.SetVoltage(driveMax);
 }
 
 void DrivetrainSubsystem::ResetEncoders()
 {
-    for (DiffSwerveModule *module : moduleArray)
-        module->ResetEncoders();
+    m_frontLeft.ResetEncoders();
 }
 
 units::degree_t DrivetrainSubsystem::GetHeading() const
@@ -156,8 +138,7 @@ double DrivetrainSubsystem::GetTurnRate()
 
 void DrivetrainSubsystem::MotorsOff()
 {
-    for (DiffSwerveModule *module : moduleArray)
-        module->MotorsOff();
+    m_frontLeft.MotorsOff();
 }
 
 void DrivetrainSubsystem::ToggleFieldCentric()
@@ -191,15 +172,13 @@ void DrivetrainSubsystem::GyroCrab(double x, double y, double desiredAngle)
 
 void DrivetrainSubsystem::SetWheelOffsets()
 {
-    for (DiffSwerveModule *module : moduleArray)
-        module->SetZeroOffset();
+    m_frontLeft.SetZeroOffset();
     frc::DataLogManager::Log("INFO: SetWheelOffsets Complete\n");
 }
 
 void DrivetrainSubsystem::LoadWheelOffsets()
 {
-    for (DiffSwerveModule *module : moduleArray)
-        module->LoadZeroOffset();
+    m_frontLeft.LoadZeroOffset();
 
     frc::DataLogManager::Log("INFO: LoadWheelOffsets Complete\n");
 }

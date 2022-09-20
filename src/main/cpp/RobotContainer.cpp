@@ -7,11 +7,11 @@ RobotContainer::RobotContainer()
       m_joystickDriveCommand{
           &m_drivetrainSubsystem,
           [&]()
-          { return m_driveJoystick.GetX(); },
+          { return m_driveJoystick.GetRawAxis(0); },
           [&]()
-          { return m_driveJoystick.GetY(); },
+          { return m_driveJoystick.GetRawAxis(1); },
           [&]()
-          { return m_driveJoystick.GetZ(); },
+          { return m_driveJoystick.GetRawAxis(4); },
           [&]()
           { return m_driveJoystick.GetRawButtonPressed(1); }}
 {

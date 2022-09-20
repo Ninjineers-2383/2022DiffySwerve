@@ -154,13 +154,6 @@ public:
     void LoadWheelOffsets();
 
     DiffSwerveModule m_frontLeft;
-    DiffSwerveModule m_frontRight;
-    DiffSwerveModule m_rear;
-
-    DiffSwerveModule *moduleArray[DriveConstants::kModuleCount] = {
-        &m_frontLeft,
-        &m_frontRight,
-        &m_rear};
 
 private:
     // The gyro sensor
