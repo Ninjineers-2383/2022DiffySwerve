@@ -246,6 +246,15 @@ void DiffSwerveModule::InitSendable(wpi::SendableBuilder &builder)
         { return m_bottomMotor.GetTemperature(); },
         nullptr);
 
+    builder.AddDoubleProperty(
+        "Quadrature Raw", [this]
+        { return m_encoder.GetRawQuad(); },
+        nullptr);
+    builder.AddDoubleProperty(
+        "Absolute Raw", [this]
+        { return m_encoder.GetRawAbs(); },
+        nullptr);
+
     wpi::SendableRegistry::AddLW(&m_drivePIDController, m_name + "/Drive PID");
     wpi::SendableRegistry::AddLW(&m_turningPIDController, m_name + "/Turn PID");
 }
